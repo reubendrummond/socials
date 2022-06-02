@@ -2,6 +2,7 @@ import { RegisterSchema } from "@lib/validationSchemas";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@prisma";
 import { Prisma } from "@prisma/client";
+import { logError } from "@lib/logError";
 
 type Data = {
   name: string;
@@ -18,48 +19,42 @@ export default async function handler(
       name: "Only post requests allowed",
     });
 
+  // cast pattern
+  const fields = RegisterSchema.cast(req.body) as Prisma.CustomerCreateInput;
+  if (!(await RegisterSchema.isValid(fields)))
+    return res.status(400).json({
+      name: "Form not valid",
+    });
+
   try {
-    const fields = RegisterSchema.cast(req.body);
-    console.log(fields);
+    const c = await prisma?.customer.create({
+      data: {
+        name: fields.name,
+        email: fields.email,
+        age: fields.age,
+        title: fields.title,
+      },
+    });
 
-    if (await RegisterSchema.isValid(fields)) {
-      try {
-        const c = await prisma?.customer.create({
-          data: {
-            name: fields.name ?? "",
-            email: fields.email ?? "",
-            age: fields.age ?? 0,
-            title: fields.title ?? "",
-          },
-        });
-        res.status(201).json({ name: "User registered", data: c });
-      } catch (err) {
-        console.log(err);
-
-        if (err instanceof Prisma.PrismaClientKnownRequestError) {
-          switch (err.code) {
-            case "P2002":
-              res.status(500).json({
-                name: "This email is already registered.",
-                error: err,
-              });
-              break;
-            default:
-              res.status(500).json({
-                name: "There was an issue adding the record",
-                error: err,
-              });
-              break;
-          }
-          return;
-        }
+    res.status(201).json({ name: "User registered", data: c });
+  } catch (err) {
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      switch (err.code) {
+        case "P2002":
+          return res.status(409).json({
+            name: "This email is already registered.",
+            error: err,
+          });
+        default:
+          logError(err);
+          return res.status(500).json({
+            name: "There was an issue adding the record",
+            error: err,
+          });
       }
     }
-  } catch (err) {
-    console.log(err);
-
-    res.status(400).json({
-      name: "Form not valid",
+    return res.status(500).json({
+      name: "Something went wrong",
       error: err,
     });
   }
