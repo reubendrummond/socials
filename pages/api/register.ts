@@ -20,14 +20,14 @@ export default async function handler(
     });
 
   // cast pattern
-  const fields = RegisterSchema.cast(req.body) as Prisma.CustomerCreateInput;
+  const fields = RegisterSchema.cast(req.body) as Prisma.UserCreateInput;
   if (!(await RegisterSchema.isValid(fields)))
     return res.status(400).json({
       name: "Form not valid",
     });
 
   try {
-    const c = await prisma?.customer.create({
+    const c = await prisma?.user.create({
       data: {
         name: fields.name,
         email: fields.email,

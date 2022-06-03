@@ -7,18 +7,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Customer {
+model User {
   id    Int    @id @default(autoincrement())
   name  String
   email String @unique
   age   Int
+  role  Role   @default(USER)
   title Titles
+  Posts Post[]
 }
 
-model Item {
-  id   Int    @id @default(autoincrement())
-  name String
-  cost Float
+model Post {
+  id          Int     @id @default(autoincrement())
+  title       String?
+  description String
+  authorId    Int
+  author      User    @relation(fields: [authorId], references: [id])
 }
 
 enum Titles {
@@ -27,4 +31,10 @@ enum Titles {
   Ms
   Miss
   Lord
+}
+
+enum Role {
+  USER
+  ADMIN
+  SUPER_ADMIN
 }

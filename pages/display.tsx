@@ -1,42 +1,47 @@
-import { Customer } from "@prisma/client";
+import { User } from "@prisma/client";
 import prisma from "@prisma";
 import { GetStaticProps } from "next";
 import React, { useEffect } from "react";
 import { logError } from "lib/logError";
+import MainLayout from "layouts/MainLayout";
 
-interface TestProps {
-  customers: Customer[];
+interface UserProps {
+  users: User[];
 }
 
-const Display = (props: TestProps) => {
+const Display = (props: UserProps) => {
   useEffect(() => {
     console.log(props);
-  }, []);
+  }, [props]);
   return (
-    <>
-      {props.customers.map(({ id, name, email }) => {
-        return (
-          <div key={id}>
-            <h1>{name}</h1>
-            <p>{email}</p>
-            <p>{id}</p>
-          </div>
-        );
-      })}
-    </>
+    <MainLayout>
+      {props.users ? (
+        props.users.map(({ id, name, email }) => {
+          return (
+            <div key={id}>
+              <h1>{name}</h1>
+              <p>{email}</p>
+              <p>{id}</p>
+            </div>
+          );
+        })
+      ) : (
+        <p>No users!!!</p>
+      )}
+    </MainLayout>
   );
 };
 
 export default Display;
 
-export const getStaticProps: GetStaticProps<TestProps> = async (context) => {
+export const getStaticProps: GetStaticProps<UserProps> = async (context) => {
   try {
-    const customers = await prisma.customer.findMany();
+    const users = await prisma.user.findMany();
     return {
       props: {
-        customers,
+        users,
       },
-      revalidate: 10,
+      revalidate: 60,
     };
   } catch (err) {
     if (err instanceof Error) logError(err);
