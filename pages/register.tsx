@@ -1,13 +1,10 @@
-import { NextPage } from "next";
 import { RegisterForm } from "@components/RegisterForm";
-import MainLayout from "layouts/MainLayout";
+import { CustomNextPage } from "@lib/types/page";
 
-const Register: NextPage = () => {
-  return (
-    <MainLayout>
-      <RegisterForm />
-    </MainLayout>
-  );
+const Register: CustomNextPage = () => {
+  return <RegisterForm />;
 };
+
+Register.layout = "main";
 
 export default Register;

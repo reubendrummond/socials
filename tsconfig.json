@@ -18,7 +18,8 @@
     "paths": {
       "@components/*": ["components/*"],
       "@lib/*": ["lib/*"],
-      "@prisma": ["lib/prisma"]
+      "@prisma": ["lib/prisma"],
+      "@fb": ["lib/firebase/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
