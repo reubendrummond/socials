@@ -53,9 +53,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       //   return;
       // }
 
-      // order matters here for ProtectedRoute wrapper in _app.ts
+      if (user) await addToken(user);
       setUser(user);
-      setIsAuthenticating(false);
+
+      // I don't like this but ensures that there are no flashes of pages
+      setTimeout(() => setIsAuthenticating(false), 10);
 
       // user.getIdToken(true).then(async (t) => {
       //   console.log("authorised with firebase");
@@ -99,7 +101,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const unsubscribe = onIdTokenChanged(auth, (user) => {
-      console.log(`token status ${user !== null}`);
+      // console.log(`token status ${user !== null}`);
     });
 
     return () => unsubscribe();
@@ -150,8 +152,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
       .then(async (userCred) => {
-        await addToken(userCred.user);
-        onSuccess && onSuccess();
+        // await addToken(userCred.user);
+        // onSuccess && onSuccess();
       })
       .catch(handleFirebaseError)
       .finally(() => setIsSubmitting(false));

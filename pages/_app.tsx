@@ -5,11 +5,12 @@ import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import { CustomNextPage } from "@lib/types/page";
 import MainLayout from "layouts/MainLayout";
-import { FC, FunctionComponent, ReactNode, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { Router } from "next/router";
 import PageLoader from "@components/Loaders/Page";
 import { AuthProvider } from "@lib/hooks/useAuth";
-import { ProtectedRoute } from "@components/Protected";
+import { ProtectedRoute } from "@components/RouteGuard";
+import { AppName } from "@lib/constants";
 
 type ExtendedAppProps = AppProps & {
   Component: CustomNextPage;
@@ -34,7 +35,7 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
   return (
     <>
       <Head>
-        <title>{Component.title || "Socials"}</title>
+        <title>{Component.title || AppName}</title>
       </Head>
       <ThemeProvider attribute="class">
         <AuthProvider>

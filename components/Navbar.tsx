@@ -20,11 +20,11 @@ const Navbar = () => {
         <LightningBoltIcon className="w-[40px] hover:cursor-pointer" />
       </Link>
 
-      {user && (
+      {/* {user && (
         <div className="flex flex-row gap-x-4">
           <Link href={"/display"}>Display</Link>
         </div>
-      )}
+      )} */}
 
       <div className="flex flex-row items-center gap-x-4">
         {user ? (
