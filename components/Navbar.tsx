@@ -5,9 +5,15 @@ import { LightningBoltIcon } from "@heroicons/react/solid";
 import { useAuth } from "@lib/hooks/useAuth";
 import Image from "next/image";
 import { Menu } from "@headlessui/react";
+import { useRouter } from "next/router";
 
 const Navbar = () => {
   const { user, signOut } = useAuth();
+  const router = useRouter();
+  const onSignout = () => {
+    router.replace("/auth/signin");
+  };
+
   return (
     <div className="container w-full flex flex-row justify-between items-center pt-2 pb-6 m-auto">
       <Link href={"/"}>
@@ -35,13 +41,13 @@ const Navbar = () => {
             <Menu.Items className="absolute right-0 mt-2 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex flex-col items-end">
               <p>{user.displayName}</p>
               <p>{user.email}</p>
-              <button onClick={() => signOut()}>Sign out</button>
+              <button onClick={() => signOut(onSignout)}>Sign out</button>
             </Menu.Items>
           </Menu>
         ) : (
           <>
             <Link href="/auth/signin">Sign In</Link>
-            <Link href="/auth/refister">Register</Link>
+            <Link href="/auth/register">Register</Link>
           </>
         )}
         <ThemeToggle />

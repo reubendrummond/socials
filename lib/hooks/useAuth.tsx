@@ -3,10 +3,12 @@ import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
   onAuthStateChanged,
+  onIdTokenChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
   User,
+  UserCredential,
 } from "firebase/auth";
 import {
   createContext,
@@ -14,7 +16,9 @@ import {
   ReactNode,
   useState,
   useEffect,
+  useMemo,
 } from "react";
+import { unstable_renderSubtreeIntoContainer } from "react-dom";
 import { auth } from "../firebase/client";
 
 interface AuthContextProps {
@@ -22,8 +26,11 @@ interface AuthContextProps {
   signIn: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   signInWithGoogle: (onSuccess?: () => void) => void;
-  signOut: () => void;
+  signOut: (onSignout: () => void) => void;
   isSubmitting: boolean;
+  // isSigningOut
+  isAuthenticating: boolean;
+  token: string | null;
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
@@ -34,10 +41,56 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isAuthenticating, setIsAuthenticating] = useState(true); // to see when to display page
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      console.log(`user status is ${user !== null}`);
+      // if (!user) {
+      //   setUser(user);
+      //   setIsAuthenticating(false);
+
+      //   return;
+      // }
+
+      // order matters here for ProtectedRoute wrapper in _app.ts
       setUser(user);
+      setIsAuthenticating(false);
+
+      // user.getIdToken(true).then(async (t) => {
+      //   console.log("authorised with firebase");
+      //   fetch("/api/auth/setCookie", {
+      //     method: "POST",
+      //     signal: controller.signal,
+      //     headers: {
+      //       authorization: `Bearer ${t}`,
+      //     },
+      //   })
+      //     .then((res) => res.json())
+      //     .then((data) => {
+      //       console.log(data);
+      //       setToken(t);
+      //       setUser(user);
+      //     });
+      // });
+
+      // const controller = new AbortController();
+      // user?.getIdToken(true).then(async (t) => {
+      //   console.log("authorised with firebase");
+      //   const res = await fetch("/api/auth/setCookie", {
+      //     signal: controller.signal,
+      //     headers: {
+      //       authorization: `Bearer ${t}`,
+      //     },
+      //   });
+      //   const data = await res.json();
+      //   console.log(data);
+      //   console.log("token set in cookie");
+      //   setToken(t);
+      //   setUser(user);
+      // });
+
+      // return () => controller.abort();
     });
     return () => {
       unsubscribe();
@@ -45,28 +98,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    const controller = new AbortController();
+    const unsubscribe = onIdTokenChanged(auth, (user) => {
+      console.log(`token status ${user !== null}`);
+    });
 
-    user
-      ?.getIdToken(true)
-      .then((t) => {
-        fetch("/api/auth/setCookie", {
-          signal: controller.signal,
-          headers: {
-            authorization: `Bearer ${t}`,
-          },
-        });
-        setToken(t);
-      })
-      .catch(console.error);
-    console.log(user);
+    return () => unsubscribe();
+  }, []);
 
-    return () => controller.abort();
-  }, [user]);
+  // useEffect(() => {
+  //   const controller = new AbortController();
 
-  useEffect(() => {
-    console.log("token", token);
-  }, [token]);
+  //   user
+  //     ?.getIdToken(true)
+  //     .then((t) => {
+  //       fetch("/api/auth/setCookie", {
+  //         signal: controller.signal,
+  //         headers: {
+  //           authorization: `Bearer ${t}`,
+  //         },
+  //       });
+  //       setToken(t);
+  //     })
+  //     .catch(console.error);
+  //   console.log(user);
+
+  //   return () => controller.abort();
+  // }, [user]);
+
+  // useEffect(() => {
+  //   console.log("token", token?.slice(-10));
+  // }, [token]);
 
   const signIn = async (email: string, password: string) => {
     setIsSubmitting(true);
@@ -88,19 +149,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
     signInWithPopup(auth, provider)
-      .then((userCred) => {
+      .then(async (userCred) => {
+        await addToken(userCred.user);
         onSuccess && onSuccess();
       })
       .catch(handleFirebaseError)
       .finally(() => setIsSubmitting(false));
   };
 
-  const signOut = async () => {
+  const signOut = async (onSignout: () => void) => {
+    // state for signing out?
     firebaseSignOut(auth)
-      .then((_) => {
-        console.log("Signed out successfully");
+      .then(async (_) => {
+        await fetch("/api/auth/signout", {
+          method: "POST",
+        });
+        console.log("Signed out of firebase successfully");
+        onSignout();
       })
       .catch(handleFirebaseError);
+    // const res = await fetch("/api/auth/signout");
+    // const data = await res.json();
+    // console.log(data);
+    // console.log("Cookie removed ");
   };
 
   const handleFirebaseError = (err: any) => {
@@ -109,6 +180,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       console.error(err);
       // ...
     }
+  };
+
+  const addToken = async (user: User) => {
+    return user.getIdToken(true).then(async (t) => {
+      console.log("authorised with firebase");
+      const res = await fetch("/api/auth/setCookie", {
+        method: "POST",
+        headers: {
+          authorization: `Bearer ${t}`,
+        },
+      });
+      const data = await res.json();
+      console.log(data);
+      setToken(t);
+    });
   };
 
   return (
@@ -120,6 +206,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         signInWithGoogle,
         signOut,
         isSubmitting,
+        isAuthenticating,
+        token,
       }}
     >
       {children}
