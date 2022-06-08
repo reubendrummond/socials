@@ -7,7 +7,10 @@ const SignIn: CustomNextPage = () => {
   const { signInWithGoogle, isSubmitting } = useAuth();
   const router = useRouter();
   const onSuccess = () => {
-    router.push("/display");
+    const next = router.query.next as string;
+
+    if (next) router.replace("/" + next);
+    else router.replace("/display");
   };
 
   return (
@@ -22,6 +25,8 @@ const SignIn: CustomNextPage = () => {
   );
 };
 
+SignIn.title = "Sign In";
 SignIn.layout = "main";
+SignIn.authRequired = "UNAUTHED";
 
 export default SignIn;

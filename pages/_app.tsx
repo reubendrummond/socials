@@ -5,16 +5,17 @@ import { ThemeProvider } from "next-themes";
 import Head from "next/head";
 import { CustomNextPage } from "@lib/types/page";
 import MainLayout from "layouts/MainLayout";
-import { useEffect, useState } from "react";
-import { Router, useRouter } from "next/router";
+import { FC, FunctionComponent, ReactNode, useEffect, useState } from "react";
+import { Router } from "next/router";
 import PageLoader from "@components/Loaders/Page";
 import { AuthProvider } from "@lib/hooks/useAuth";
+import { ProtectedRoute } from "@components/Protected";
 
 type ExtendedAppProps = AppProps & {
   Component: CustomNextPage;
 };
 
-function MyApp({ Component, pageProps }: ExtendedAppProps) {
+const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const start = () => setLoading(true);
@@ -33,27 +34,29 @@ function MyApp({ Component, pageProps }: ExtendedAppProps) {
   return (
     <>
       <Head>
-        <title>Social</title>
+        <title>{Component.title || "Socials"}</title>
       </Head>
       <ThemeProvider attribute="class">
         <AuthProvider>
-          {Component.layout ? (
-            Component.layout === "main" ? (
-              <MainLayout>
-                {loading ? <PageLoader /> : <Component {...pageProps} />}
-              </MainLayout>
+          <ProtectedRoute authRequired={Component.authRequired}>
+            {Component.layout ? (
+              Component.layout === "main" ? (
+                <MainLayout>
+                  {loading ? <PageLoader /> : <Component {...pageProps} />}
+                </MainLayout>
+              ) : (
+                <MainLayout>
+                  {loading ? <PageLoader /> : <Component {...pageProps} />}
+                </MainLayout>
+              )
             ) : (
-              <MainLayout>
-                {loading ? <PageLoader /> : <Component {...pageProps} />}
-              </MainLayout>
-            )
-          ) : (
-            <Component {...pageProps} />
-          )}
+              <Component {...pageProps} />
+            )}
+          </ProtectedRoute>
         </AuthProvider>
       </ThemeProvider>
     </>
   );
-}
+};
 
 export default MyApp;

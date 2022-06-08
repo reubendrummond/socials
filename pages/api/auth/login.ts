@@ -20,6 +20,7 @@ export default async function handler(
       .status(400)
       .json({ error: "Authrorization header must be in form 'Bearer TOKEN'" });
   const token = els[1];
+  console.log(token);
   return getAuth()
     .verifyIdToken(token)
     .then((_) => {
