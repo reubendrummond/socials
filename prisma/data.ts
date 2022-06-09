@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
 
-export const customers: Prisma.UserCreateInput[] = [
+export const users: Prisma.UserCreateInput[] = [
   {
     email: "testy1@gmail.com",
     name: "Testy Test",

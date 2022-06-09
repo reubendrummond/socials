@@ -1,12 +1,12 @@
 import { PrismaClient } from "@prisma/client";
-import { customers } from "./data";
+import { users } from "./data";
 
 const prisma = new PrismaClient();
 
 const load = async () => {
   try {
-    await prisma.customer.createMany({
-      data: customers,
+    await prisma.user.createMany({
+      data: users,
     });
   } catch (err) {
     console.error(err);
