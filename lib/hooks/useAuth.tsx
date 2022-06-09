@@ -18,7 +18,6 @@ import {
   useEffect,
   useMemo,
 } from "react";
-import { unstable_renderSubtreeIntoContainer } from "react-dom";
 import { auth } from "../firebase/client";
 
 interface AuthContextProps {

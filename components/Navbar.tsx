@@ -31,7 +31,7 @@ const Navbar = () => {
           <Menu as="div" className="relative h-[40px]">
             <Menu.Button className="hover:cursor-pointer h-full">
               <Image
-                src={user.photoURL ?? "some default"}
+                src={user.photoURL ?? "/defaultPhoto"}
                 alt="photo"
                 width="40px"
                 height="40px"

@@ -22,11 +22,50 @@
 } */
 
 @layer base {
+  :root {
+    /* default theme */
+    @apply theme-space;
+  }
+
+  .theme-space {
+    --primary: 124 58 237;
+    --primary-dark: 109 40 217;
+    --primary-light: 167 139 250;
+
+    /* --secondary: ;
+    --secondary-dark ;
+    --secondary-light ; */
+  }
+
+  .theme-weed {
+    --primary: 20 184 166;
+    --primary-dark: 15 118 110;
+    --primary-light: 94 234 212;
+
+    /* --secondary: ;
+    --secondary-dark ;
+    --secondary-light ; */
+  }
+
+  .theme-sunset {
+    --primary: 217 70 239;
+    --primary-dark: 134 25 143;
+    --primary-light: 232 121 249;
+
+    /* --secondary: ;
+    --secondary-dark ;
+    --secondary-light ; */
+  }
+
   html,
   body {
     height: 100%;
     font-family: "Poppins", sans;
     padding: 0;
     margin: 0;
+  }
+
+  h1 {
+    @apply text-primary;
   }
 }

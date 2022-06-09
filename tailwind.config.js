@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 const { fontFamily, spacing } = require("tailwindcss/defaultTheme");
 // mouch yoinked from https://github.com/leerob/leerob.io/blob/main/tailwind.config.js
 
@@ -11,6 +12,11 @@ module.exports = {
   theme: {
     extend: {
       colors: {
+        primary: {
+          DEFAULT: "rgb(var(--primary) / <alpha-value>)",
+          light: "rgb(var(--primary-light) / <alpha-value>)",
+          dark: "rgb(var(--primary-dark) / <alpha-value>)",
+        },
         gray: {
           0: "#fff",
           100: "#fafafa",

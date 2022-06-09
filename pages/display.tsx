@@ -8,14 +8,15 @@ import { useAuth } from "@lib/hooks/useAuth";
 import { verifyIdToken } from "@lib/auth";
 import { BackendFirebaseToken } from "@lib/constants";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
+import { CustomNextPage } from "@lib/types/page";
 
 interface UserProps {
   users: User[];
 }
 
-const Display = (
-  props: InferGetServerSidePropsType<typeof getServerSideProps>
-) => {
+const Display: CustomNextPage<
+  InferGetServerSidePropsType<typeof getServerSideProps>
+> = (props) => {
   // useAuth({ redirect: "/auth/signin", requiredRole: "ADMIN" });
   const { users } = props;
   // console.log(users);
@@ -38,22 +39,19 @@ const Display = (
   );
 };
 
+Display.title = "Display";
+// Display.layout = "main";
+Display.authRequired = "USER";
+
 export default Display;
 
 export const getServerSideProps = RequireServerSideAuth<UserProps>(
   async (context) => {
+    const users = await prisma.user.findMany();
+
     return {
       props: {
-        users: [
-          {
-            id: 1,
-            name: "test",
-            email: "test",
-            age: 12,
-            role: "USER",
-            title: "Lord",
-          },
-        ],
+        users,
       },
     };
   },

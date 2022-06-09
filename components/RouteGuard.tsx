@@ -27,6 +27,9 @@ export const ProtectedRoute = ({
     // page doesn't require authentication
     if (!authRequired) return;
 
+    // wait to finish authenticating
+    if (isAuthenticating) return;
+
     // page requires unauthenticated state
     if (user && authRequired === "UNAUTHED") {
       // later: go to 'from' if exists else:
@@ -36,12 +39,8 @@ export const ProtectedRoute = ({
       return;
     }
 
-    // wait to finish authenticating
-    if (isAuthenticating) return;
-
     // page requires authentication
     if (!user && authRequired && authRequired !== "UNAUTHED") {
-      console.log("called in here");
       router.replace(LoginPage);
       return;
     }
