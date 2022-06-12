@@ -17,12 +17,11 @@ interface UserProps {
 const Display: CustomNextPage<
   InferGetServerSidePropsType<typeof getServerSideProps>
 > = (props) => {
-  // useAuth({ redirect: "/auth/signin", requiredRole: "ADMIN" });
   const { users } = props;
-  // console.log(users);
+
   return (
     <MainLayout>
-      {users ? (
+      {users.length ? (
         users.map(({ id, name, email }) => {
           return (
             <div key={id}>
@@ -47,7 +46,12 @@ export default Display;
 
 export const getServerSideProps = RequireServerSideAuth<UserProps>(
   async (context) => {
-    const users = await prisma.user.findMany();
+    let users: User[] = [];
+    try {
+      users = await prisma.user.findMany();
+    } catch (err) {
+      console.log(err);
+    }
 
     return {
       props: {

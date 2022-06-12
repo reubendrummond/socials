@@ -1,5 +1,6 @@
 import { AfterLoginPage, AuthRequiredOptions, LoginPage } from "@lib/constants";
 import { useAuth } from "@lib/hooks/useAuth";
+import usePush from "@lib/hooks/usePush";
 import { Role } from "@prisma/client";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
@@ -14,6 +15,7 @@ export const ProtectedRoute = ({
 }) => {
   const { user, isAuthenticating } = useAuth();
   const router = useRouter();
+  const push = usePush();
   useEffect(() => {
     // console.log(
     //   "auth req",
@@ -34,17 +36,17 @@ export const ProtectedRoute = ({
     if (user && authRequired === "UNAUTHED") {
       // later: go to 'from' if exists else:
       const next = router.query.next as string;
-      if (next) router.replace("/" + next);
-      else router.replace(AfterLoginPage);
+      if (next) push("/" + next);
+      else push(AfterLoginPage);
       return;
     }
 
     // page requires authentication
     if (!user && authRequired && authRequired !== "UNAUTHED") {
-      router.replace(LoginPage);
+      push(LoginPage);
       return;
     }
-  }, [user, isAuthenticating, authRequired]);
+  }, [user, isAuthenticating, authRequired, push, router]);
 
   if (isAuthenticating) return <PageLoader />;
 

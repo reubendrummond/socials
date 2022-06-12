@@ -2,10 +2,14 @@ import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import MainLayout from "layouts/MainLayout";
 import { useRouter } from "next/router";
-import React from "react";
+import React, { useEffect } from "react";
 
 const SignIn: CustomNextPage = () => {
   const { signInWithGoogle, isSubmitting } = useAuth();
+
+  useEffect(() => {
+    console.log("mounted");
+  }, []);
 
   return (
     <MainLayout>

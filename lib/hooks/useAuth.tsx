@@ -1,6 +1,7 @@
 import { Role } from "@prisma/client";
 import {
   createUserWithEmailAndPassword,
+  getIdTokenResult,
   GoogleAuthProvider,
   onAuthStateChanged,
   onIdTokenChanged,
@@ -43,20 +44,36 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // to see when to display page
 
   useEffect(() => {
+    // optimistic log in
+    const key = "optimisticUserLoggedIn";
+    const userString = window.localStorage.getItem(key);
+    // console.log(userString);
+    if (userString) {
+      const u = JSON.parse(userString) as User;
+      // const u = JSON.parse(JSON.stringify({ garbage: ":(" }));
+      if (u.displayName && u.photoURL) {
+        // console.log(u.getIdToken());
+        // getIdTokenResult(u).then(console.log);
+        setUser(u);
+        setIsAuthenticating(false);
+      } else {
+        console.log("invalid!");
+      }
+    }
+
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
       console.log(`user status is ${user !== null}`);
-      // if (!user) {
-      //   setUser(user);
-      //   setIsAuthenticating(false);
 
-      //   return;
-      // }
-
-      if (user) await addToken(user);
+      if (user) {
+        window.localStorage.setItem(key, JSON.stringify(user));
+        await addToken(user);
+      } else {
+        window.localStorage.removeItem(key);
+      }
       setUser(user);
-
+      setIsAuthenticating(false);
       // I don't like this but ensures that there are no flashes of pages
-      setTimeout(() => setIsAuthenticating(false), 10);
+      // setTimeout(() => setIsAuthenticating(false), 10);
 
       // user.getIdToken(true).then(async (t) => {
       //   console.log("authorised with firebase");
@@ -98,13 +115,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     };
   }, []);
 
-  useEffect(() => {
-    const unsubscribe = onIdTokenChanged(auth, (user) => {
-      // console.log(`token status ${user !== null}`);
-    });
+  // useEffect(() => {
+  //   const unsubscribe = onIdTokenChanged(auth, (user) => {
+  //     // console.log(`token status ${user !== null}`);
+  //   });
 
-    return () => unsubscribe();
-  }, []);
+  //   return () => unsubscribe();
+  // }, []);
 
   // useEffect(() => {
   //   const controller = new AbortController();
@@ -185,7 +202,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const addToken = async (user: User) => {
     return user.getIdToken(true).then(async (t) => {
-      console.log("authorised with firebase");
       const res = await fetch("/api/auth/setCookie", {
         method: "POST",
         headers: {
@@ -193,7 +209,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       const data = await res.json();
-      console.log(data);
+      console.log(data, t);
       setToken(t);
     });
   };

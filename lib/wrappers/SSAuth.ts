@@ -10,7 +10,7 @@ export const RequireServerSideAuth = <T>(
   const wrapped: GetServerSideProps<T> = async (context) => {
     const token = context.req.cookies[BackendFirebaseToken];
     const { url } = context.req;
-    console.log(token);
+    // console.log(token);
     if (!token || !(await verifyIdToken(token))) {
       return {
         redirect: {
