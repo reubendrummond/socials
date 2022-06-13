@@ -40,7 +40,7 @@ const Display: CustomNextPage<
 
 Display.title = "Display";
 // Display.layout = "main";
-Display.authRequired = "USER";
+// Display.authRequired = "USER";
 
 export default Display;
 

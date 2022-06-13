@@ -44,7 +44,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isAuthenticating, setIsAuthenticating] = useState(true); // to see when to display page
 
   useEffect(() => {
-    // optimistic log in
+    // optimistically show user, but authentication is not optimistic
+    // this means there is a loading state for pages which require authentication
+    // for pages where no auth is required, the user status can still be shown before authentication
     const key = "optimisticUserLoggedIn";
     const userString = window.localStorage.getItem(key);
     // console.log(userString);
@@ -55,23 +57,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // console.log(u.getIdToken());
         // getIdTokenResult(u).then(console.log);
         setUser(u);
-        setIsAuthenticating(false);
       } else {
         console.log("invalid!");
       }
     }
 
-    const unsubscribe = onAuthStateChanged(auth, async (user) => {
-      console.log(`user status is ${user !== null}`);
+    const unsubscribe = onAuthStateChanged(auth, async (u) => {
+      console.log(`user status is ${u !== null}`);
 
-      if (user) {
-        window.localStorage.setItem(key, JSON.stringify(user));
-        await addToken(user);
+      if (u) {
+        window.localStorage.setItem(key, JSON.stringify(u));
+        await addToken(u);
       } else {
         window.localStorage.removeItem(key);
       }
-      setUser(user);
+      // order matters here so no flashes of content
       setIsAuthenticating(false);
+      setUser(u);
       // I don't like this but ensures that there are no flashes of pages
       // setTimeout(() => setIsAuthenticating(false), 10);
 

@@ -10,8 +10,10 @@ export const RequireServerSideAuth = <T>(
   const wrapped: GetServerSideProps<T> = async (context) => {
     const token = context.req.cookies[BackendFirebaseToken];
     const { url } = context.req;
-    // console.log(token);
+    const tokenVerified = await verifyIdToken(token);
+    console.log(tokenVerified);
     if (!token || !(await verifyIdToken(token))) {
+      // console.log("not verfied!");
       return {
         redirect: {
           statusCode: 307,
@@ -19,6 +21,7 @@ export const RequireServerSideAuth = <T>(
         },
       };
     }
+    // console.log("verified");
 
     return getServerSideProps(context);
   };

@@ -48,7 +48,7 @@ export const ProtectedRoute = ({
     }
   }, [user, isAuthenticating, authRequired, push, router]);
 
-  if (isAuthenticating) return <PageLoader />;
+  if (authRequired && isAuthenticating) return <PageLoader />;
 
   return <>{children}</>;
 };
