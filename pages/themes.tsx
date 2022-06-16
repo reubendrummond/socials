@@ -24,7 +24,7 @@ const Themes: CustomNextPage = () => {
               )}
             </div>
             <div className="rounded-2xl p-4 bg-gradient-to-br from-primary-dark to-primary-light w-full">
-              <h1 className="text-white/70">{theme}</h1>
+              <h3 className="text-white/70">{theme}</h3>
               <p className="text-white/70">Some text</p>
             </div>
           </div>

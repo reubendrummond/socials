@@ -66,6 +66,14 @@
   }
 
   h1 {
-    @apply text-primary;
+    @apply text-6xl;
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-xl;
   }
 }

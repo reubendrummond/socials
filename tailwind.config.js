@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const { fontFamily, spacing } = require("tailwindcss/defaultTheme");
+const colors = require("tailwindcss/colors");
 // mouch yoinked from https://github.com/leerob/leerob.io/blob/main/tailwind.config.js
 
 module.exports = {
@@ -17,18 +18,18 @@ module.exports = {
           light: "rgb(var(--primary-light) / <alpha-value>)",
           dark: "rgb(var(--primary-dark) / <alpha-value>)",
         },
-        gray: {
-          0: "#fff",
-          100: "#fafafa",
-          200: "#eaeaea",
-          300: "#999999",
-          400: "#888888",
-          500: "#666666",
-          600: "#444444",
-          700: "#333333",
-          800: "#222222",
-          900: "#111111",
-        },
+        // gray: {
+        //   0: "#fff",
+        //   100: "#fafafa",
+        //   200: "#eaeaea",
+        //   300: "#999999",
+        //   400: "#888888",
+        //   500: "#666666",
+        //   600: "#444444",
+        //   700: "#333333",
+        //   800: "#222222",
+        //   900: "#111111",
+        // },
       },
       fontFamily: {
         sans: ["Poppins"],
@@ -100,9 +101,9 @@ module.exports = {
         },
       }),
     },
-  },
-  variants: {
-    typography: ["dark"],
+    variants: {
+      typography: ["dark"],
+    },
   },
   plugins: [],
 };

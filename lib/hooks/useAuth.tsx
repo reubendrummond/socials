@@ -19,7 +19,7 @@ import { auth } from "../firebase/client";
 
 interface AuthContextProps {
   user?: User | null;
-  signIn: (email: string, password: string) => void;
+  signIn: (email: string, password: string) => Promise<any>;
   register: (email: string, password: string) => void;
   signInWithGoogle: (onSuccess?: () => void) => void;
   signOut: (onSignout: () => void) => void;
@@ -148,10 +148,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     setIsSubmitting(true);
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCred) => {})
-      .catch(handleFirebaseError)
-      .finally(() => setIsSubmitting(false));
+    await new Promise((res) => setTimeout(res, 1000));
+    setIsSubmitting(false);
+    return;
+
+    // signInWithEmailAndPassword(auth, email, password)
+    //   .then((userCred) => {})
+    //   .catch(handleFirebaseError)
+    //   .finally(() => setIsSubmitting(false));
   };
 
   const register = async (email: string, password: string) => {
