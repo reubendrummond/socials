@@ -1,31 +1,24 @@
 import { AfterLoginPage, AuthRequiredOptions, LoginPage } from "@lib/constants";
 import { useAuth } from "@lib/hooks/useAuth";
 import usePush from "@lib/hooks/usePush";
-import { Role } from "@prisma/client";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import PageLoader from "./Loaders/Page";
 
-export const ProtectedRoute = ({
+// strict true will not allow flashes of content but loader html will be sent
+export const RouteGuard = ({
   children,
   authRequired,
+  strict = false,
 }: {
   children: ReactNode;
   authRequired?: AuthRequiredOptions;
+  strict: boolean;
 }) => {
   const { user, isAuthenticating } = useAuth();
   const router = useRouter();
   const push = usePush();
   useEffect(() => {
-    // console.log(
-    //   "auth req",
-    //   authRequired,
-    //   isAuthenticating,
-    //   router,
-    //   authRequired
-    // );
-    console.log("route guarding");
-
     // page doesn't require authentication
     if (!authRequired) return;
 
@@ -48,7 +41,7 @@ export const ProtectedRoute = ({
     }
   }, [user, isAuthenticating, authRequired, push, router]);
 
-  if (authRequired && isAuthenticating) return <PageLoader />;
+  if (strict && authRequired && isAuthenticating) return <PageLoader />;
 
   return <>{children}</>;
 };

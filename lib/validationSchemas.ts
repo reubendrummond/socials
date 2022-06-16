@@ -10,4 +10,10 @@ export const RegisterSchema = yup.object().shape({
   age: yup.number().required().positive().max(100),
 });
 
+export const SignInSchema = yup.object().shape({
+  email: yup.string().required().email(),
+  password: yup.string().required().min(4),
+});
+
 export type RegisterData = yup.InferType<typeof RegisterSchema>;
+export type SignInData = yup.InferType<typeof SignInSchema>;

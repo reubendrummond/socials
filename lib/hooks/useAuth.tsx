@@ -1,15 +1,12 @@
 import { Role } from "@prisma/client";
 import {
   createUserWithEmailAndPassword,
-  getIdTokenResult,
   GoogleAuthProvider,
   onAuthStateChanged,
-  onIdTokenChanged,
   signInWithEmailAndPassword,
   signInWithPopup,
   signOut as firebaseSignOut,
   User,
-  UserCredential,
 } from "firebase/auth";
 import {
   createContext,
@@ -17,12 +14,11 @@ import {
   ReactNode,
   useState,
   useEffect,
-  useMemo,
 } from "react";
 import { auth } from "../firebase/client";
 
 interface AuthContextProps {
-  user: User | null;
+  user?: User | null;
   signIn: (email: string, password: string) => void;
   register: (email: string, password: string) => void;
   signInWithGoogle: (onSuccess?: () => void) => void;
@@ -39,7 +35,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [token, setToken] = useState<string | null>(null);
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null | undefined>(undefined);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isAuthenticating, setIsAuthenticating] = useState(true); // to see when to display page
 
@@ -74,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // order matters here so no flashes of content
       setIsAuthenticating(false);
       setUser(u);
+
       // I don't like this but ensures that there are no flashes of pages
       // setTimeout(() => setIsAuthenticating(false), 10);
 

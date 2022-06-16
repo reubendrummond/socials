@@ -5,10 +5,24 @@ import { GetServerSideProps } from "next";
 
 export const RequireServerSideAuth = <T>(
   getServerSideProps: GetServerSideProps<T>,
-  role: Role = "USER"
+  role: Role | "UNAUTHED" = "USER"
 ): GetServerSideProps<T> => {
   const wrapped: GetServerSideProps<T> = async (context) => {
     const token = context.req.cookies[BackendFirebaseToken];
+    if (role === "UNAUTHED") {
+      const tokenVerified = token && (await verifyIdToken(token));
+      if (tokenVerified) {
+        return {
+          redirect: {
+            permanent: true,
+            destination: "/dashboard",
+          },
+        };
+      } else {
+        return getServerSideProps(context);
+      }
+    }
+
     const { url } = context.req;
     const tokenVerified = await verifyIdToken(token);
     console.log(tokenVerified);

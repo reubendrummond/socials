@@ -9,7 +9,7 @@ import { useEffect, useState } from "react";
 import { Router } from "next/router";
 import PageLoader from "@components/Loaders/Page";
 import { AuthProvider } from "@lib/hooks/useAuth";
-import { ProtectedRoute } from "@components/RouteGuard";
+import { RouteGuard } from "@components/RouteGuard";
 import { AppName } from "@lib/constants";
 
 type ExtendedAppProps = AppProps & {
@@ -39,7 +39,7 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
       </Head>
       <ThemeProvider attribute="class">
         <AuthProvider>
-          <ProtectedRoute authRequired={Component.authRequired}>
+          <RouteGuard authRequired={Component.authRequired}>
             {Component.layout ? (
               Component.layout === "main" ? (
                 <MainLayout>
@@ -53,7 +53,7 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
             ) : (
               <Component {...pageProps} />
             )}
-          </ProtectedRoute>
+          </RouteGuard>
         </AuthProvider>
       </ThemeProvider>
     </>
