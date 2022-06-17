@@ -3,8 +3,10 @@ import Navbar from "@components/Navbar";
 
 const MainLayout = ({ children }: { children: ReactNode }) => {
   return (
-    <div className="px-4 pt-2">
-      <Navbar />
+    <div className="px-4 pb-4">
+      <nav>
+        <Navbar />
+      </nav>
       {children}
     </div>
   );

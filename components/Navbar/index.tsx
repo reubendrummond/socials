@@ -16,8 +16,8 @@ const Navbar = () => {
   };
 
   return (
-    <div className="container w-full flex flex-row justify-between items-center pt-2 pb-6 m-auto">
-      <div>
+    <div className="container w-full flex flex-row justify-between items-center pt-4 pb-6 m-auto">
+      <div className="flex gap-x-4 items-center">
         <Link href={"/"}>
           <LightningBoltIcon className="w-[40px] hover:cursor-pointer" />
         </Link>

@@ -1,5 +1,5 @@
 import "styles/globals.css";
-import "@fontsource/poppins";
+import "@fontsource/poppins/latin-ext.css";
 import type { AppProps } from "next/app";
 import { ThemeProvider } from "next-themes";
 import Head from "next/head";
@@ -39,7 +39,7 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
       </Head>
       <ThemeProvider attribute="class">
         <AuthProvider>
-          <RouteGuard authRequired={Component.authRequired}>
+          <RouteGuard authRequired={Component.authRequired} strict={false}>
             {Component.layout ? (
               Component.layout === "main" ? (
                 <MainLayout>

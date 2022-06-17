@@ -1,7 +1,7 @@
 import { RegisterForm } from "@components/Forms/RegisterForm";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
-import { AuthLayout } from "layouts/AuthLayout";
+import AuthLayout from "layouts/AuthLayout";
 import React from "react";
 
 const Register: CustomNextPage = () => {
