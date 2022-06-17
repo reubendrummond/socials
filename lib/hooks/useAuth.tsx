@@ -148,34 +148,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signIn = async (email: string, password: string) => {
     setIsSubmitting(true);
-    await new Promise((res) => setTimeout(res, 1000));
-    setIsSubmitting(false);
-    return;
-
-    // signInWithEmailAndPassword(auth, email, password)
-    //   .then((userCred) => {})
-    //   .catch(handleFirebaseError)
-    //   .finally(() => setIsSubmitting(false));
+    return signInWithEmailAndPassword(auth, email, password)
+      .then((userCred) => {})
+      .catch(handleFirebaseError)
+      .finally(handleSuccess);
   };
 
   const register = async (email: string, password: string) => {
     setIsSubmitting(true);
-    createUserWithEmailAndPassword(auth, email, password)
+    return createUserWithEmailAndPassword(auth, email, password)
       .then((userCred) => {})
       .catch(handleFirebaseError)
-      .finally(() => setIsSubmitting(false));
+      .finally(handleSuccess);
   };
 
   const signInWithGoogle = async (onSuccess?: () => void) => {
     setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
-    signInWithPopup(auth, provider)
+    return signInWithPopup(auth, provider)
       .then(async (userCred) => {
         // await addToken(userCred.user);
         // onSuccess && onSuccess();
       })
       .catch(handleFirebaseError)
-      .finally(() => setIsSubmitting(false));
+      .finally(handleSuccess);
   };
 
   const signOut = async (onSignout: () => void) => {
@@ -196,11 +192,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleFirebaseError = (err: any) => {
+    throw err;
     console.log(err);
     if (err instanceof Error) {
       console.error(err);
       // ...
     }
+  };
+
+  const handleSuccess = () => {
+    setIsSubmitting(false);
+    return;
   };
 
   const addToken = async (user: User) => {

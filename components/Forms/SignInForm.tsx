@@ -1,8 +1,11 @@
 import { Formik, Form, Field, FieldAttributes } from "formik";
 import { SignInSchema } from "@lib/validationSchemas";
-import { useState, FC } from "react";
-import { sign } from "crypto";
+import { useState, FC, useEffect } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
+import {
+  ExclamationCircleIcon,
+  CheckCircleIcon,
+} from "@heroicons/react/outline";
 
 export const SignInForm = () => {
   const [message, setMessage] = useState("");
@@ -11,21 +14,27 @@ export const SignInForm = () => {
   return (
     <Formik
       onSubmit={async (values, actions) => {
-        actions.setSubmitting(true);
-        const res = await signIn(values.email, values.password);
+        try {
+          actions.setSubmitting(true);
+          await signIn(values.email, values.password);
+          setMessage("Submitted successfully!");
+          actions.resetForm();
+        } catch (err) {
+          console.log(err);
+          setMessage("There was an error submitting!");
+          // reset password field
+          actions.setFieldValue("password", "", false);
+          actions.setFieldTouched("password", false);
+          actions.setFieldError("password", ":(");
+        } finally {
+          actions.setSubmitting(false);
+        }
         // const res = await fetch("/api/register", {
         //   method: "POST",
         //   body: JSON.stringify(values),
         // });
         // console.log(await res.json());
-        console.log(values);
-        if (true) {
-          setMessage("Submitted successfully!");
-          actions.resetForm();
-        } else {
-          setMessage("There was an error submitting!");
-        }
-        actions.setSubmitting(false);
+        // console.log(values);
       }}
       initialValues={{
         email: "",
@@ -43,7 +52,6 @@ export const SignInForm = () => {
               placeholder="email"
               component={StyledInput}
             />
-            {props.dirty && props.touched.email && props.errors.email}
             <Field
               name="password"
               type="password"
@@ -51,7 +59,6 @@ export const SignInForm = () => {
               placeholder="password"
               component={StyledInput}
             />
-            {props.dirty && props.touched.password && props.errors.password}
             <button
               className="py-3 rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 hover:opacity-90 disabled:opacity-30"
               type="submit"
@@ -74,16 +81,36 @@ export const SignInForm = () => {
 
 const StyledInput: FC<FieldAttributes<any>> = ({
   field, // { name, value, onChange, onBlur }
-  form: { touched, errors, dirty }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
+  form: { touched, errors, dirty, values }, // also values, setXXXX, handleXXXX, dirty, isValid, status, etc.
   type,
   label,
   ...props
-}) => (
-  <div className="flex flex-col gap-y-1">
-    <label htmlFor={field.name}>{label}</label>
-    <input type={type} {...field} {...props} className="px-4 py-2 rounded-md" />
-    {props.dirty && touched[field.name] && errors[field.name] && (
-      <div className="error">{errors[field.name]}</div>
-    )}
-  </div>
-);
+}) => {
+  //   useEffect(() => {
+  //     console.log(values[field.name] === "");
+  //   }, [values, field.name]);
+
+  return (
+    <div className="flex flex-col gap-y-1">
+      <label htmlFor={field.name}>{label}</label>
+      <div className="relative">
+        <input
+          type={type}
+          {...field}
+          {...props}
+          className="w-full pl-4 pr-8 py-2 rounded-md"
+        />
+        <div className="absolute right-2 inset-y-0 w-[24px] flex items-center">
+          {errors[field.name]
+            ? dirty &&
+              touched[field.name] && (
+                <ExclamationCircleIcon className="stroke-red-400" />
+              )
+            : values[field.name] && (
+                <CheckCircleIcon className="stroke-green-300" />
+              )}
+        </div>
+      </div>
+    </div>
+  );
+};

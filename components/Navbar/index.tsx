@@ -1,14 +1,15 @@
 import Link from "next/link";
-import React from "react";
+import React, { useMemo } from "react";
 import ThemeToggle from "@components/ThemeToggle";
 import { LightningBoltIcon } from "@heroicons/react/solid";
 import { useAuth } from "@lib/hooks/useAuth";
 import Image from "next/image";
 import { Menu } from "@headlessui/react";
 import { useRouter } from "next/router";
+import { Transition } from "@headlessui/react";
 
 const Navbar = () => {
-  const { user, signOut } = useAuth();
+  const { user, signOut, isAuthenticating } = useAuth();
   const router = useRouter();
   const onSignout = () => {
     router.replace("/auth/signin");
@@ -16,19 +17,43 @@ const Navbar = () => {
 
   return (
     <div className="container w-full flex flex-row justify-between items-center pt-2 pb-6 m-auto">
-      <Link href={"/"}>
-        <LightningBoltIcon className="w-[40px] hover:cursor-pointer" />
-      </Link>
-
+      <div>
+        <Link href={"/"}>
+          <LightningBoltIcon className="w-[40px] hover:cursor-pointer" />
+        </Link>
+        <Link href="/themes">Themes</Link>
+      </div>
       {/* {user && (
         <div className="flex flex-row gap-x-4">
           <Link href={"/display"}>Display</Link>
         </div>
       )} */}
 
-      <div className="flex flex-row items-center gap-x-4">
-        {user !== undefined ? (
-          user ? (
+      <RightNav />
+    </div>
+  );
+};
+
+const RightNav = () => {
+  const { user, isAuthenticating, signOut } = useAuth();
+  const router = useRouter();
+  const onSignout = () => {
+    router.replace("/auth/signin");
+  };
+
+  return (
+    <>
+      {
+        <Transition
+          show={user !== undefined}
+          // as="div"s
+          appear={true}
+          className="flex flex-row items-center gap-x-4"
+          enter="transition-opacity duration-800"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+        >
+          {user ? (
             <Menu as="div" className="relative h-[40px]">
               <Menu.Button className="hover:cursor-pointer h-full">
                 <Image
@@ -50,13 +75,11 @@ const Navbar = () => {
               <Link href="/auth/signin">Sign In</Link>
               <Link href="/auth/register">Register</Link>
             </>
-          )
-        ) : (
-          <></>
-        )}
-        <ThemeToggle />
-      </div>
-    </div>
+          )}
+          <ThemeToggle />
+        </Transition>
+      }
+    </>
   );
 };
 
