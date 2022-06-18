@@ -1,6 +1,6 @@
 import { Formik, Form, Field } from "formik";
 import { SignInSchema } from "@lib/validationSchemas";
-import { useState, FC, useEffect } from "react";
+import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput } from "./StyledInputs";
 import { resetInput } from "./utils";
@@ -65,7 +65,8 @@ export const SignInForm = () => {
                 isSubmitting ||
                 Boolean(user) ||
                 !props.isValid ||
-                props.isSubmitting
+                props.isSubmitting ||
+                props.values === props.initialValues
               }
             >
               Submit

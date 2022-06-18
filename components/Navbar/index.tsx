@@ -7,6 +7,7 @@ import Image from "next/image";
 import { Menu } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Transition } from "@headlessui/react";
+import { UserCircleIcon } from "@heroicons/react/outline";
 
 const Navbar = () => {
   const { user, signOut, isAuthenticating } = useAuth();
@@ -56,13 +57,20 @@ const RightNav = () => {
           {user ? (
             <Menu as="div" className="relative h-[40px]">
               <Menu.Button className="hover:cursor-pointer h-full">
-                <Image
-                  src={user.photoURL ?? "/defaultPhoto"}
-                  alt="photo"
-                  width="40px"
-                  height="40px"
-                  className="rounded-full"
-                />
+                {user.photoURL ? (
+                  <Image
+                    src={user.photoURL || "/"}
+                    alt="photo"
+                    width="40px"
+                    height="40px"
+                    className="rounded-full"
+                  />
+                ) : (
+                  <UserCircleIcon
+                    className="w-[40px] h-[40px]"
+                    strokeWidth="1.5px"
+                  />
+                )}
               </Menu.Button>
               <Menu.Items className="absolute right-0 mt-2 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex flex-col items-end">
                 <p>{user.displayName}</p>

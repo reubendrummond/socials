@@ -17,7 +17,7 @@ export const GoogleLoginButton: FC<ThirdPartyButtonProps> = ({
       <div className="relative aspect-square h-[24px]">
         <Image className="" src={googleLogo} alt="Google logo" layout="fill" />
       </div>
-      <span className="text-[14px] px-4 uppercase text-gray-700 font-medium">
+      <span className="text-[14px] px-4 uppercase text-gray-700 font-medium whitespace-nowrap">
         Sign in with Google
       </span>
     </button>
