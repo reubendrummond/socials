@@ -5,6 +5,7 @@ import React from "react";
 import { GoogleLoginButton } from "@components/thirdPartyAuthButtons/GoogleLoginButton";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import { SignInForm } from "@components/Forms/SignInForm";
+import FormCard from "@components/Forms/FormCard";
 
 const SignIn: CustomNextPage = () => {
   const { signInWithGoogle, isSubmitting, user } = useAuth();
@@ -15,7 +16,7 @@ const SignIn: CustomNextPage = () => {
         <div className="absolute bg-primary-dark w-96 h-96 rounded-full mix-blend-multiply dark:mix-blend-plus-lighter filter blur-lg animate-blob animation-delay-2000 opacity-50 -right-12 -top-14" />
         <div className="absolute bg-primary w-96 h-96 rounded-full mix-blend-multiply dark:mix-blend-plus-lighter filter blur-lg animate-blob animation-delay-4000 opacity-60 bottom-6 -left-16" />
         <div className="absolute bg-primary-light w-96 h-96 rounded-full mix-blend-multiply dark:mix-blend-plus-lighter filter blur-lg animate-blob opacity-50 -bottom-14 -right-20" />
-        <div className="relative min-w-fit max-w-md px-12 py-8 rounded-xl bg-white dark:bg-gray-800 opacity-90 flex flex-col gap-y-4 justify-center shadow-lg">
+        <FormCard>
           <h2 className="text-center font-semibold">Sign In</h2>
           <div className="flex flex-col justify-center">
             <GoogleLoginButton
@@ -33,7 +34,7 @@ const SignIn: CustomNextPage = () => {
           <div>
             <SignInForm />
           </div>
-        </div>
+        </FormCard>
       </div>
     </AuthLayout>
   );

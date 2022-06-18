@@ -1,4 +1,4 @@
-import { RegisterSchema } from "@lib/validationSchemas";
+import { RegisterTestSchema } from "@lib/validationSchemas";
 import type { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@prisma";
 import { Prisma } from "@prisma/client";
@@ -20,8 +20,8 @@ export default async function handler(
     });
 
   // cast pattern
-  const fields = RegisterSchema.cast(req.body) as Prisma.UserCreateInput;
-  if (!(await RegisterSchema.isValid(fields)))
+  const fields = RegisterTestSchema.cast(req.body) as Prisma.UserCreateInput;
+  if (!(await RegisterTestSchema.isValid(fields)))
     return res.status(400).json({
       name: "Form not valid",
     });

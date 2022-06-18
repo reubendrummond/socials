@@ -1,4 +1,5 @@
 import { Role } from "@prisma/client";
+import { FirebaseError } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -7,6 +8,8 @@ import {
   signInWithPopup,
   signOut as firebaseSignOut,
   User,
+  sendPasswordResetEmail,
+  confirmPasswordReset as firebaseConfirmPasswordReset,
 } from "firebase/auth";
 import {
   createContext,
@@ -19,14 +22,20 @@ import { auth } from "../firebase/client";
 
 interface AuthContextProps {
   user?: User | null;
-  signIn: (email: string, password: string) => Promise<any>;
-  register: (email: string, password: string) => void;
-  signInWithGoogle: (onSuccess?: () => void) => void;
+  signIn: (email: string, password: string) => Promise<SuccessResponse>;
+  register: (email: string, password: string) => Promise<SuccessResponse>;
+  signInWithGoogle: (onSuccess?: () => void) => Promise<SuccessResponse>;
   signOut: (onSignout: () => void) => void;
   isSubmitting: boolean;
   // isSigningOut
   isAuthenticating: boolean;
   token: string | null;
+}
+
+interface SuccessResponse {
+  data: {
+    message: string;
+  };
 }
 
 const AuthContext = createContext<AuthContextProps>({} as AuthContextProps);
@@ -150,19 +159,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setIsSubmitting(true);
     return signInWithEmailAndPassword(auth, email, password)
       .then((userCred) => {})
-      .catch(handleFirebaseError)
-      .finally(handleSuccess);
+      .then((_) => handleSuccess("Sign in successful"))
+      .catch(handleFirebaseError);
+  };
+
+  const resetPassword = async (email: string) => {
+    return sendPasswordResetEmail(auth, email);
+  };
+
+  const confirmPasswordReset = (confirmationCode: any, newPassword: string) => {
+    return firebaseConfirmPasswordReset(auth, confirmationCode, newPassword);
   };
 
   const register = async (email: string, password: string) => {
     setIsSubmitting(true);
     return createUserWithEmailAndPassword(auth, email, password)
       .then((userCred) => {})
-      .catch(handleFirebaseError)
-      .finally(handleSuccess);
+      .then((_) => handleSuccess("Registration successful"))
+      .catch(handleFirebaseError);
   };
 
-  const signInWithGoogle = async (onSuccess?: () => void) => {
+  const signInWithGoogle = async (
+    onSuccess?: () => void
+  ): Promise<SuccessResponse> => {
     setIsSubmitting(true);
     const provider = new GoogleAuthProvider();
     return signInWithPopup(auth, provider)
@@ -170,8 +189,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // await addToken(userCred.user);
         // onSuccess && onSuccess();
       })
-      .catch(handleFirebaseError)
-      .finally(handleSuccess);
+      .then((_) => handleSuccess("Sign in successful"))
+      .catch(handleFirebaseError);
   };
 
   const signOut = async (onSignout: () => void) => {
@@ -192,6 +211,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const handleFirebaseError = (err: any) => {
+    setIsSubmitting(false);
+    if (err instanceof FirebaseError) {
+      Object.entries(err).map(([key, val]) => {
+        console.log(`${key}: ${val}`);
+      });
+      let message: string;
+      switch (err.code) {
+        case "auth/email-already-in-use":
+          message = "Email already in use";
+          break;
+        case "auth/too-many-requests":
+          message = "Too many requests made. Try again later.";
+          break;
+        case "auth/user-disabled":
+          message = "Account has been disabled.";
+          break;
+        case "auth/app-deleted":
+          message = "This app is no longer in use";
+          break;
+        case "auth/app-not-authorized":
+          message = "This app has not been authorised yet";
+          break;
+        default:
+          message = "Something went wrong. Please try again.";
+      }
+      throw Error(message);
+    }
+
     throw err;
     console.log(err);
     if (err instanceof Error) {
@@ -200,9 +247,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const handleSuccess = () => {
+  const handleSuccess = (message: string): SuccessResponse => {
     setIsSubmitting(false);
-    return;
+    return {
+      data: {
+        message,
+      },
+    };
   };
 
   const addToken = async (user: User) => {
