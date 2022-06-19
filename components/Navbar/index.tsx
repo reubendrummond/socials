@@ -10,11 +10,7 @@ import { Transition } from "@headlessui/react";
 import { UserCircleIcon } from "@heroicons/react/outline";
 
 const Navbar = () => {
-  const { user, signOut, isAuthenticating } = useAuth();
   const router = useRouter();
-  const onSignout = () => {
-    router.replace("/auth/signin");
-  };
 
   return (
     <div className="container w-full flex flex-row justify-between items-center pt-4 pb-6 m-auto">

@@ -1,13 +1,14 @@
 import { Formik, Form, Field } from "formik";
 import { RegisterSchema } from "@lib/validationSchemas";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput } from "./StyledInputs";
-import { resetInput } from "./utils";
+import { onEnterDown, onEnterUp, resetInput } from "./utils";
 
 export const RegisterForm = () => {
   const [message, setMessage] = useState("");
   const { register } = useAuth();
+  const submitButtonRef = useRef<HTMLButtonElement>(null);
 
   return (
     <Formik
@@ -39,7 +40,10 @@ export const RegisterForm = () => {
       validationSchema={RegisterSchema}
     >
       {(props) => (
-        <Form>
+        <Form
+          onKeyDown={(e) => onEnterDown(e, submitButtonRef.current)}
+          onKeyUp={(e) => onEnterUp(e, submitButtonRef.current)}
+        >
           <div className="flex flex-col gap-y-2">
             <Field
               type="text"
@@ -63,8 +67,9 @@ export const RegisterForm = () => {
               component={StyledInput}
             />
             <button
-              className="py-3 text-white rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 hover:opacity-90 disabled:opacity-30"
+              className="py-3 text-white rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 active:opacity-70 hover:opacity-90 disabled:opacity-30"
               type="submit"
+              ref={submitButtonRef}
               disabled={
                 !props.isValid ||
                 props.isSubmitting ||

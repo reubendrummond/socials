@@ -14,6 +14,7 @@ const Register: CustomNextPage = () => {
         <div className="absolute bg-primary-light w-96 h-96 rounded-full mix-blend-multiply dark:mix-blend-plus-lighter filter blur-lg animate-blob opacity-50 -bottom-14 -right-20" />
         <FormCard>
           <h2 className="text-center font-semibold">Register</h2>
+
           <RegisterForm />
         </FormCard>
       </div>

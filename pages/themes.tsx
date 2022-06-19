@@ -4,6 +4,11 @@ import { Theme } from "@lib/types/themes";
 
 const Themes: CustomNextPage = () => {
   const themes: Theme[] = ["theme-space", "theme-weed", "theme-sunset"];
+  const changeTheme = (theme: Theme) => {
+    const nextEl = window.document.querySelector("#__next");
+    themes.forEach((theme) => nextEl?.classList.remove(theme));
+    nextEl?.classList.add(theme);
+  };
 
   return (
     <MainLayout>
@@ -12,6 +17,7 @@ const Themes: CustomNextPage = () => {
           <div
             key={theme + index}
             className={theme + " flex flex-row gap-x-4 flex-grow"}
+            onClick={() => changeTheme(theme)}
           >
             <div className="flex flex-col gap-y-3">
               {["bg-primary-light", "bg-primary", "bg-primary-dark"].map(
