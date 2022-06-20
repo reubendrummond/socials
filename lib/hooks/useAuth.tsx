@@ -10,6 +10,10 @@ import {
   User,
   sendPasswordResetEmail,
   confirmPasswordReset as firebaseConfirmPasswordReset,
+  sendEmailVerification,
+  applyActionCode,
+  onIdTokenChanged,
+  Unsubscribe,
 } from "firebase/auth";
 import {
   createContext,
@@ -30,6 +34,13 @@ interface AuthContextProps {
   // isSigningOut
   isAuthenticating: boolean;
   token: string | null;
+  verifyCode: (code: string) => Promise<void>;
+  sendEmailVerificationCode: (user: User) => Promise<void>;
+  onUserCredChanged: (callback: (user: User | null) => void) => Unsubscribe;
+}
+
+interface ExtendedUser extends User {
+  isValid: boolean;
 }
 
 interface SuccessResponse {
@@ -68,17 +79,32 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
 
     const unsubscribe = onAuthStateChanged(auth, async (u) => {
-      console.log(`user status is ${u !== null}`);
+      // console.log(`user status is ${u !== null}`);
 
       if (u) {
-        window.localStorage.setItem(key, JSON.stringify(u));
         await addToken(u);
-      } else {
+        window.localStorage.setItem(key, JSON.stringify(u));
+        // } else {
+        //   if (localStorage.getItem(key)) {
+        //     await fetch("/api/auth/signout", {
+        //       method: "POST",
+        //     });
+        //   }
+        //   setUser(null);
+        //   window.localStorage.removeItem(key);
+        // }
+      } else if (window.localStorage.getItem(key)) {
+        await fetch("/api/auth/signout", {
+          method: "POST",
+        });
+        console.log("Signed out of firebase successfully");
         window.localStorage.removeItem(key);
       }
+
       // order matters here so no flashes of content
       setIsAuthenticating(false);
       setUser(u);
+      // console.log(u);
 
       // I don't like this but ensures that there are no flashes of pages
       // setTimeout(() => setIsAuthenticating(false), 10);
@@ -174,9 +200,30 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (email: string, password: string) => {
     setIsSubmitting(true);
     return createUserWithEmailAndPassword(auth, email, password)
-      .then((userCred) => {})
-      .then((_) => handleSuccess("Registration successful"))
+      .then(async ({ user }) => {
+        await sendEmailVerification(user);
+      })
+      .then((_) => {
+        return handleSuccess("Registration successful. Must verify account.");
+      })
       .catch(handleFirebaseError);
+  };
+
+  const sendEmailVerificationCode = (user: User) => {
+    return sendEmailVerification(user).catch(handleFirebaseError);
+  };
+
+  const verifyCode = async (code: string) => {
+    return applyActionCode(auth, code).catch(handleFirebaseError);
+  };
+
+  const onUserCredChanged = (
+    callback: (user: User | null) => void
+  ): Unsubscribe => {
+    return () => {
+      const unsubscribe = onIdTokenChanged(auth, callback);
+      return unsubscribe;
+    };
   };
 
   const signInWithGoogle = async (
@@ -197,11 +244,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     // state for signing out?
     firebaseSignOut(auth)
       .then(async (_) => {
-        await fetch("/api/auth/signout", {
-          method: "POST",
-        });
-        console.log("Signed out of firebase successfully");
-        onSignout();
+        // await fetch("/api/auth/signout", {
+        //   method: "POST",
+        // });
+        // console.log("Signed out of firebase successfully");
+        // onSignout();
       })
       .catch(handleFirebaseError);
     // const res = await fetch("/api/auth/signout");
@@ -281,6 +328,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         isSubmitting,
         isAuthenticating,
         token,
+        verifyCode,
+        sendEmailVerificationCode,
+        onUserCredChanged,
       }}
     >
       {children}

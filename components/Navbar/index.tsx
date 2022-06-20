@@ -50,7 +50,7 @@ const RightNav = () => {
           enterFrom="opacity-0"
           enterTo="opacity-100"
         >
-          {user ? (
+          {user?.emailVerified ? (
             <Menu as="div" className="relative h-[40px]">
               <Menu.Button className="hover:cursor-pointer h-full">
                 {user.photoURL ? (
