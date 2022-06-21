@@ -1,12 +1,7 @@
 import { User } from "@prisma/client";
 import prisma from "@prisma";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import React from "react";
-import { logError } from "lib/logError";
 import MainLayout from "layouts/MainLayout";
-import { useAuth } from "@lib/hooks/useAuth";
-import { verifyIdToken } from "@lib/auth";
-import { BackendFirebaseToken } from "@lib/constants";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import { CustomNextPage } from "@lib/types/page";
 
@@ -14,9 +9,7 @@ interface UserProps {
   users: User[];
 }
 
-const Display: CustomNextPage<
-  InferGetServerSidePropsType<typeof getServerSideProps>
-> = (props) => {
+const Display: CustomNextPage<UserProps> = (props) => {
   const { users } = props;
 
   return (
@@ -39,7 +32,6 @@ const Display: CustomNextPage<
 };
 
 Display.title = "Display";
-// Display.layout = "main";
 Display.authRequired = "USER";
 
 export default Display;

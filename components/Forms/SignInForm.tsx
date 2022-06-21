@@ -2,8 +2,9 @@ import { Formik, Form, Field } from "formik";
 import { SignInSchema } from "@lib/validationSchemas";
 import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
-import { StyledInput } from "./StyledInputs";
+import { StyledInput, SubmitButton } from "./StyledInputs";
 import { resetInput } from "./utils";
+import Link from "next/link";
 
 export const SignInForm = () => {
   const [message, setMessage] = useState("");
@@ -58,7 +59,12 @@ export const SignInForm = () => {
               placeholder="password"
               component={StyledInput}
             />
-            <button
+            <Link href="/auth/reset" passHref>
+              <a className="text-sm underline w-fit ml-auto">
+                Forgot Password?
+              </a>
+            </Link>
+            <SubmitButton
               className="py-3 text-white rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 hover:opacity-90 disabled:opacity-30"
               type="submit"
               disabled={
@@ -70,7 +76,7 @@ export const SignInForm = () => {
               }
             >
               Submit
-            </button>
+            </SubmitButton>
             {message && <p>{message}</p>}
           </div>
         </Form>

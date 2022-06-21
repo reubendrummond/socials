@@ -1,5 +1,11 @@
 import { ErrorMessage, FieldProps, FormikErrors } from "formik";
-import { FC } from "react";
+import {
+  ButtonHTMLAttributes,
+  DetailedHTMLProps,
+  FC,
+  forwardRef,
+  PropsWithChildren,
+} from "react";
 import {
   ExclamationCircleIcon,
   CheckCircleIcon,
@@ -75,3 +81,18 @@ const DisplayError = ({
 
   return <div>{error.map((e) => e)}</div>;
 };
+
+export const SubmitButton = forwardRef<
+  HTMLButtonElement,
+  DetailedHTMLProps<ButtonHTMLAttributes<HTMLButtonElement>, HTMLButtonElement>
+>(function SubmitButton(props, ref) {
+  return (
+    <button
+      className="py-3 text-white rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 active:opacity-70 hover:opacity-90 disabled:opacity-30"
+      {...props}
+      ref={ref}
+    >
+      {props.children}
+    </button>
+  );
+});

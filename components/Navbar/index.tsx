@@ -10,8 +10,6 @@ import { Transition } from "@headlessui/react";
 import { UserCircleIcon } from "@heroicons/react/outline";
 
 const Navbar = () => {
-  const router = useRouter();
-
   return (
     <div className="container w-full flex flex-row justify-between items-center pt-4 pb-6 m-auto">
       <div className="flex gap-x-4 items-center">
@@ -20,11 +18,6 @@ const Navbar = () => {
         </Link>
         <Link href="/themes">Themes</Link>
       </div>
-      {/* {user && (
-        <div className="flex flex-row gap-x-4">
-          <Link href={"/display"}>Display</Link>
-        </div>
-      )} */}
 
       <RightNav />
     </div>
@@ -32,7 +25,7 @@ const Navbar = () => {
 };
 
 const RightNav = () => {
-  const { user, isAuthenticating, signOut } = useAuth();
+  const { user, signOut } = useAuth();
   const router = useRouter();
   const onSignout = () => {
     router.replace("/auth/signin");
@@ -43,8 +36,6 @@ const RightNav = () => {
       {
         <Transition
           show={user !== undefined}
-          // as="div"s
-          appear={true}
           className="flex flex-row items-center gap-x-4"
           enter="transition-opacity duration-800"
           enterFrom="opacity-0"

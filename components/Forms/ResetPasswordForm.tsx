@@ -1,32 +1,30 @@
 import { Formik, Form, Field } from "formik";
-import { RegisterSchema } from "@lib/validationSchemas";
-import { useState, useRef, useEffect } from "react";
+import { ResetPasswordSchema } from "@lib/validationSchemas";
+import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput, SubmitButton } from "./StyledInputs";
-import { onEnterDown, onEnterUp, resetInput } from "./utils";
+import { resetInput } from "./utils";
 
-export const RegisterForm = () => {
+export const ResetPasswordForm = () => {
   const [message, setMessage] = useState("");
-  const { register, isSubmitting, user } = useAuth();
-  const submitButtonRef = useRef<HTMLButtonElement>(null);
+  const { isSubmitting, user, resetPassword } = useAuth();
 
   return (
     <Formik
       onSubmit={async (values, actions) => {
-        register(values.email, values.password)
+        console.log(values.email);
+        resetPassword(values.email)
           .then(({ data }) => {
             setMessage(data.message);
             actions.resetForm();
           })
           .catch((e) => {
-            // console.error(e);
             if (e instanceof Error) {
               setMessage(e.message);
             } else {
               setMessage("There was an error. Please try again.");
             }
-            resetInput(actions, "password");
-            resetInput(actions, "passwordConfirm");
+            resetInput(actions, "email");
           })
           .finally(() => {
             actions.setSubmitting(false);
@@ -34,16 +32,11 @@ export const RegisterForm = () => {
       }}
       initialValues={{
         email: "",
-        password: "",
-        passwordConfirm: "",
       }}
-      validationSchema={RegisterSchema}
+      validationSchema={ResetPasswordSchema}
     >
       {(props) => (
-        <Form
-        // onKeyDown={(e) => onEnterDown(e, submitButtonRef.current)}
-        // onKeyUp={(e) => onEnterUp(e, submitButtonRef.current)}
-        >
+        <Form>
           <div className="flex flex-col gap-y-2">
             <Field
               type="text"
@@ -52,23 +45,8 @@ export const RegisterForm = () => {
               placeholder="email"
               component={StyledInput}
             />
-            <Field
-              type="password"
-              name="password"
-              label="Password"
-              placeholder="password"
-              component={StyledInput}
-            />
-            <Field
-              type="password"
-              name="passwordConfirm"
-              label="Confirm password"
-              placeholder="confirm password"
-              component={StyledInput}
-            />
             <SubmitButton
               type="submit"
-              ref={submitButtonRef}
               disabled={
                 !props.isValid ||
                 Boolean(user) ||

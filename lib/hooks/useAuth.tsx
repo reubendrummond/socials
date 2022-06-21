@@ -37,6 +37,7 @@ interface AuthContextProps {
   verifyCode: (code: string) => Promise<void>;
   sendEmailVerificationCode: (user: User) => Promise<void>;
   onUserCredChanged: (callback: (user: User | null) => void) => Unsubscribe;
+  resetPassword: (email: string) => Promise<SuccessResponse>;
 }
 
 interface ExtendedUser extends User {
@@ -190,7 +191,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const resetPassword = async (email: string) => {
-    return sendPasswordResetEmail(auth, email);
+    setIsSubmitting(true);
+    return sendPasswordResetEmail(auth, email)
+      .then(() => handleSuccess("Email sent successfully."))
+      .catch(handleFirebaseError);
   };
 
   const confirmPasswordReset = (confirmationCode: any, newPassword: string) => {
@@ -240,9 +244,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .catch(handleFirebaseError);
   };
 
+  /**
+   * Signs user out
+   * @remarks
+   * Currently onSignout is not called on signout. Routing to sign in is done by RouteGuard for protected pages.
+   * @param onSignout
+   */
   const signOut = async (onSignout: () => void) => {
     // state for signing out?
-    firebaseSignOut(auth)
+    return firebaseSignOut(auth)
       .then(async (_) => {
         // await fetch("/api/auth/signout", {
         //   method: "POST",
@@ -331,6 +341,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         verifyCode,
         sendEmailVerificationCode,
         onUserCredChanged,
+        resetPassword,
       }}
     >
       {children}

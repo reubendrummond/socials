@@ -5,7 +5,7 @@ import React, { FC } from "react";
 import ThemeToggle from "@components/ThemeToggle";
 
 export interface AuthNavProps {
-  type: "signin" | "register";
+  type?: "signin" | "register" | "reset";
 }
 
 export const AuthNav: FC<AuthNavProps> = ({ type }) => {
@@ -17,8 +17,10 @@ export const AuthNav: FC<AuthNavProps> = ({ type }) => {
       <div className="flex gap-x-4 items-center">
         {type === "signin" ? (
           <Link href={RegisterPage}>Register</Link>
-        ) : (
+        ) : type === "register" || type === "reset" ? (
           <Link href={LoginPage}>Sign In</Link>
+        ) : (
+          <></>
         )}
         <ThemeToggle />
       </div>

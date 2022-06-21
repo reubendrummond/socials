@@ -27,6 +27,10 @@ export const SignInSchema = yup.object().shape({
   password: yup.string().required().min(4),
 });
 
+export const ResetPasswordSchema = yup.object().shape({
+  email: yup.string().required().email(),
+});
+
 export type RegisterTestData = yup.InferType<typeof RegisterTestSchema>;
 export type RegisterData = yup.InferType<typeof RegisterSchema>;
 export type SignInData = yup.InferType<typeof SignInSchema>;
