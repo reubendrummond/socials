@@ -10,21 +10,48 @@ datasource db {
 }
 
 model User {
-  id    Int    @id @default(autoincrement())
-  name  String
-  email String @unique
-  age   Int
-  role  Role   @default(USER)
-  title Titles
-  Posts Post[]
+  id       Int       @id @default(autoincrement())
+  uid      String    @unique
+  name     String?
+  dob      DateTime?
+  role     Role      @default(USER)
+  title    Titles?
+  posts    Post[]    @relation("userPosts")
+  comments Comment[] @relation("userComments")
 }
 
 model Post {
-  id          Int     @id @default(autoincrement())
+  id          Int        @id @default(autoincrement())
   title       String?
   description String
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
   authorId    Int
-  author      User    @relation(fields: [authorId], references: [id])
+  userId      Int?
+  Reaction    Reaction[] @relation("postReactions")
+  Comment     Comment[]  @relation("postComments")
+  author      User       @relation(name: "userPosts", fields: [authorId], references: [id])
+}
+
+model Reaction {
+  id     Int       @id @default(autoincrement())
+  type   Reactions @default(LIKE)
+  postId Int
+  post   Post      @relation(name: "postReactions", fields: [postId], references: [id])
+}
+
+model Comment {
+  id        Int       @id @default(autoincrement())
+  body      String
+  userId    Int
+  postId    Int
+  replyId   Int?      @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  user      User      @relation(name: "userComments", fields: [userId], references: [id])
+  post      Post      @relation(name: "postComments", fields: [postId], references: [id])
+  reply     Comment?  @relation("commentReplies", fields: [replyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  replies   Comment[] @relation("commentReplies")
 }
 
 enum Titles {
@@ -39,4 +66,10 @@ enum Role {
   USER
   ADMIN
   SUPER_ADMIN
+}
+
+enum Reactions {
+  LIKE
+  ANGRY
+  LOL
 }

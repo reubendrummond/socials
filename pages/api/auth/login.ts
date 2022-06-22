@@ -1,36 +1,39 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getAuth } from "@lib/firebase/admin";
 import { BackendFirebaseToken } from "@lib/constants";
-
-type Data = {};
+import { verifyIdToken, verifyIdTokenFromHeader } from "@lib/auth";
+import { StandardResponse } from "@lib/types/backend";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<StandardResponse>
 ) {
   const authHeader = req.headers.authorization;
-  if (!authHeader)
-    return res
-      .status(400)
-      .json({ error: "No authorization header was provided" });
-  const els = authHeader?.split(" ");
 
-  if (els.length !== 2)
-    return res
-      .status(400)
-      .json({ error: "Authrorization header must be in form 'Bearer TOKEN'" });
-  const token = els[1];
-  console.log(token);
-  return getAuth()
-    .verifyIdToken(token)
-    .then((_) => {
+  // if (!authHeader)
+  //   return res
+  //     .status(400)
+  //     .json({ errors: { detail: "No authorization header was provided" } });
+  // const els = authHeader?.split(" ");
+
+  // if (els.length !== 2)
+  //   return res.status(400).json({
+  //     errors: {
+  //       detail: "Authrorization header must be in form 'Bearer TOKEN'",
+  //     },
+  //   });
+  // const token = els[1];
+
+  return verifyIdTokenFromHeader(req.headers)
+    .then(({ token }) => {
       res.setHeader(
         "set-cookie",
         `${BackendFirebaseToken}=${token}; path=/; samesite=lax; httponly;`
       );
       return res.status(200).json({ data: "Token is legit" });
     })
-    .catch((_) => {
-      return res.status(401).json({ error: "Invalid token" });
+    .catch((err) => {
+      if (err instanceof Error)
+        return res.status(401).json({ errors: { detail: err.message } });
+      return res.status(401).json({ errors: { detail: "Token invalid" } });
     });
 }

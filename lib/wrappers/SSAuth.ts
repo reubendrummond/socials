@@ -1,25 +1,13 @@
 import { verifyIdToken } from "@lib/auth";
 import { BackendFirebaseToken } from "@lib/constants";
 import { Role } from "@prisma/client";
-import { DecodedIdToken } from "firebase-admin/lib/auth/token-verifier";
 import {
-  GetServerSidePropsContext,
-  GetServerSidePropsResult,
-  PreviewData,
-} from "next";
-import { ParsedUrlQuery } from "querystring";
-import { returnURL, redirectToSignIn, destinationWithNext } from "./utils";
-
-interface ExtendedContext<Q extends ParsedUrlQuery, D extends PreviewData>
-  extends GetServerSidePropsContext<Q, D> {
-  decodedToken: DecodedIdToken;
-}
-
-type ExtendedGetServerSideProps<
-  P extends { [key: string]: any } = { [key: string]: any },
-  Q extends ParsedUrlQuery = ParsedUrlQuery,
-  D extends PreviewData = PreviewData
-> = (context: ExtendedContext<Q, D>) => Promise<GetServerSidePropsResult<P>>;
+  returnURL,
+  redirectToSignIn,
+  destinationWithNext,
+  ExtendedGetServerSideProps,
+  userFromDecodedToken,
+} from "./utils";
 
 export const RequireServerSideAuth = <T = {}>(
   getServerSideProps: ExtendedGetServerSideProps<T>,
@@ -65,6 +53,7 @@ export const RequireServerSideAuth = <T = {}>(
     }
 
     context.decodedToken = decodedToken;
+    context.user = userFromDecodedToken(decodedToken);
 
     return getServerSideProps(context);
   };
@@ -83,6 +72,7 @@ export const SSWithUser = <T = {}>(
     if (!decodedToken) return redirectToSignIn(url);
 
     context.decodedToken = decodedToken;
+    context.user = userFromDecodedToken(decodedToken);
 
     return getServerSideProps(context);
   };

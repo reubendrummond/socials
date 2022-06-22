@@ -12,7 +12,6 @@ export const ResetPasswordForm = () => {
   return (
     <Formik
       onSubmit={async (values, actions) => {
-        console.log(values.email);
         resetPassword(values.email)
           .then(({ data }) => {
             setMessage(data.message);

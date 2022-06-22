@@ -1,4 +1,3 @@
-import { Role } from "@prisma/client";
 import { FirebaseError } from "firebase/app";
 import {
   createUserWithEmailAndPassword,
@@ -14,6 +13,7 @@ import {
   applyActionCode,
   onIdTokenChanged,
   Unsubscribe,
+  updateProfile as firebaseUpdateProfile,
 } from "firebase/auth";
 import {
   createContext,
@@ -38,6 +38,13 @@ interface AuthContextProps {
   sendEmailVerificationCode: (user: User) => Promise<void>;
   onUserCredChanged: (callback: (user: User | null) => void) => Unsubscribe;
   resetPassword: (email: string) => Promise<SuccessResponse>;
+  updateProfile: (
+    user: User,
+    details: {
+      displayName?: string | null;
+      photoURL?: string | null;
+    }
+  ) => Promise<SuccessResponse>;
 }
 
 interface ExtendedUser extends User {
@@ -105,7 +112,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // order matters here so no flashes of content
       setIsAuthenticating(false);
       setUser(u);
-      // console.log(u);
+      console.log(u);
 
       // I don't like this but ensures that there are no flashes of pages
       // setTimeout(() => setIsAuthenticating(false), 10);
@@ -322,9 +329,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         },
       });
       const data = await res.json();
-      console.log(data, t);
       setToken(t);
     });
+  };
+
+  const updateProfile = async (
+    user: User,
+    details: { displayName?: string | null; photoURL?: string | null }
+  ) => {
+    return firebaseUpdateProfile(user, details)
+      .then(() => handleSuccess("Information successfully updated."))
+      .catch(handleFirebaseError);
   };
 
   return (
@@ -342,6 +357,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         sendEmailVerificationCode,
         onUserCredChanged,
         resetPassword,
+        updateProfile,
       }}
     >
       {children}

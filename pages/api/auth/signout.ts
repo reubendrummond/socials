@@ -1,12 +1,10 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getAuth } from "@lib/firebase/admin";
 import { BackendFirebaseToken } from "@lib/constants";
-
-type Data = {};
+import { StandardResponse } from "@lib/types/backend";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<StandardResponse>
 ) {
   res.setHeader(
     "set-cookie",
