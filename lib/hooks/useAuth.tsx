@@ -90,8 +90,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       // console.log(`user status is ${u !== null}`);
 
       if (u) {
-        await addToken(u);
-        window.localStorage.setItem(key, JSON.stringify(u));
+        try {
+          await addToken(u);
+          window.localStorage.setItem(key, JSON.stringify(u));
+          const data = await fetch("/api/auth/addUser").then((res) =>
+            res.json()
+          );
+          console.log(data);
+        } catch (err) {
+          console.log(err);
+          u = null;
+        }
         // } else {
         //   if (localStorage.getItem(key)) {
         //     await fetch("/api/auth/signout", {
@@ -330,6 +339,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       });
       const data = await res.json();
       setToken(t);
+      return data;
     });
   };
 

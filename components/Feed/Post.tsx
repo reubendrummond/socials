@@ -20,11 +20,14 @@ const UserPost: FC = () => {
       // formState.isSubmitting =
       try {
         await new Promise((res) => setTimeout(res, 1000));
-        throw new Error("test");
+        const d = await fetch("/api/post", {
+          method: "POST",
+          body: JSON.stringify(data),
+        }).then((res) => res.json());
+        console.log(d);
       } catch (err) {
         if (err instanceof Error) console.error("failed req");
       }
-      console.log(data);
     },
     (errors) => {
       console.log("error", errors);

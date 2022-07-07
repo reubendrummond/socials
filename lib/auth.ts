@@ -20,6 +20,7 @@ export const verifyIdTokenFromHeader = async (headers: IncomingHttpHeaders) => {
 
   return verifyIdToken(token)
     .then((decodedToken) => {
+      if (!decodedToken) throw new Error("Error getting token");
       return {
         decodedToken,
         token,

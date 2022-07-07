@@ -1,5 +1,5 @@
 import { verifyIdToken } from "@lib/auth";
-import { BackendFirebaseToken } from "@lib/constants";
+import { AfterLoginPage, BackendFirebaseToken } from "@lib/constants";
 import { Role } from "@prisma/client";
 import {
   returnURL,
@@ -46,7 +46,7 @@ export const RequireServerSideAuth = <T = {}>(
         return {
           redirect: {
             permanent: true,
-            destination: "/dashboard",
+            destination: AfterLoginPage,
           },
         };
       }
