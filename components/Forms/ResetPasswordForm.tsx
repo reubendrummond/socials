@@ -1,5 +1,5 @@
 import { Formik, Form, Field } from "formik";
-import { ResetPasswordSchema } from "@lib/validationSchemas";
+import { ResetPasswordSchema } from "@lib/forms/validationSchemas";
 import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput, SubmitButton } from "./StyledInputs";

@@ -10,10 +10,10 @@ const ThemeToggle = () => {
     setIsMounted(true);
   }, []);
 
-  useEffect(() => {
-    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
-    setTheme(prefersDark ? "dark" : "light");
-  }, [setTheme]);
+  // useEffect(() => {
+  //   const prefersDark = window.matchMedia("(prefers-color-scheme: dark)");
+  //   setTheme(prefersDark ? "dark" : "light");
+  // }, [setTheme]);
 
   const handleToggle = () => {
     if (theme === "light") setTheme("dark");

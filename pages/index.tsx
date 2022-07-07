@@ -1,13 +1,14 @@
-import type { NextPage } from "next";
-import { TestComponent } from "@components/TestComponent";
 import MainLayout from "layouts/MainLayout";
 import { CustomNextPage } from "@lib/types/page";
+import { useAuth } from "@lib/hooks/useAuth";
 
 const Home: CustomNextPage = () => {
+  const { user } = useAuth();
   return (
-    <MainLayout>
-      <h1>My Next template</h1>
-      <TestComponent />
+    <MainLayout className="flex flex-col items-center">
+      <h1>Lightning Socials</h1>
+      <div>Some featured posts</div>
+      {!user && <div>Sign in to see more ...</div>}
     </MainLayout>
   );
 };

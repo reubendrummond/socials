@@ -1,5 +1,5 @@
 import { Formik, Form, Field } from "formik";
-import { RegisterSchema } from "@lib/validationSchemas";
+import { RegisterSchema } from "@lib/forms/validationSchemas";
 import { useState } from "react";
 
 export const RegisterForm = () => {

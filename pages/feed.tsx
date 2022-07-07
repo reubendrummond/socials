@@ -1,20 +1,21 @@
+import UserPost from "@components/Feed/Post";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import MainLayout from "layouts/MainLayout";
 
-const Dashboard: CustomNextPage = () => {
+const Feed: CustomNextPage = () => {
   return (
-    <MainLayout>
-      <h1>Dashboard</h1>
+    <MainLayout className="flex flex-col items-center">
+      <UserPost />
     </MainLayout>
   );
 };
 
-Dashboard.title = "Dashboard";
-Dashboard.authRequired = "USER";
+Feed.title = "Feed";
+Feed.authRequired = "USER";
 
 export const getServerSideProps = RequireServerSideAuth<{}>(async (context) => {
   return { props: {} };
 }, "USER");
 
-export default Dashboard;
+export default Feed;

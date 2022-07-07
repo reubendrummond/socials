@@ -2,15 +2,13 @@ import { Prisma } from "@prisma/client";
 
 export const users: Prisma.UserCreateInput[] = [
   {
-    email: "testy1@gmail.com",
+    uid: "bot1",
     name: "Testy Test",
-    age: 69,
     title: "Lord",
   },
   {
-    email: "jack@russel.com",
+    uid: "bot2",
     name: "Jack Russel",
-    age: 17,
     title: "Mr",
   },
 ];

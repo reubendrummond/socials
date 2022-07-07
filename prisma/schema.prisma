@@ -10,14 +10,16 @@ datasource db {
 }
 
 model User {
-  id       Int       @id @default(autoincrement())
-  uid      String    @unique
-  name     String?
-  dob      DateTime?
-  role     Role      @default(USER)
-  title    Titles?
-  posts    Post[]    @relation("userPosts")
-  comments Comment[] @relation("userComments")
+  id        Int        @id @default(autoincrement())
+  uid       String     @unique
+  name      String?
+  dob       DateTime?
+  role      Role       @default(USER)
+  title     Titles?
+  posts     Post[]     @relation("userPosts")
+  comments  Comment[]  @relation("userComments")
+  reactions Reaction[] @relation("userReactions")
+  repliesTo Comment[]  @relation("repliesTo")
 }
 
 model Post {
@@ -27,7 +29,6 @@ model Post {
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
   authorId    Int
-  userId      Int?
   Reaction    Reaction[] @relation("postReactions")
   Comment     Comment[]  @relation("postComments")
   author      User       @relation(name: "userPosts", fields: [authorId], references: [id])
@@ -37,21 +38,25 @@ model Reaction {
   id     Int       @id @default(autoincrement())
   type   Reactions @default(LIKE)
   postId Int
+  userId Int
+  user   User      @relation(name: "userReactions", fields: [userId], references: [id])
   post   Post      @relation(name: "postReactions", fields: [postId], references: [id])
 }
 
 model Comment {
-  id        Int       @id @default(autoincrement())
-  body      String
-  userId    Int
-  postId    Int
-  replyId   Int?      @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
-  user      User      @relation(name: "userComments", fields: [userId], references: [id])
-  post      Post      @relation(name: "postComments", fields: [postId], references: [id])
-  reply     Comment?  @relation("commentReplies", fields: [replyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
-  replies   Comment[] @relation("commentReplies")
+  id          Int       @id @default(autoincrement())
+  body        String
+  userId      Int
+  postId      Int
+  replyId     Int?
+  replyUserId Int?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  user        User      @relation(name: "userComments", fields: [userId], references: [id])
+  post        Post      @relation(name: "postComments", fields: [postId], references: [id])
+  reply       Comment?  @relation("commentReplies", fields: [replyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
+  replyTo     User?     @relation("repliesTo", fields: [replyUserId], references: [id])
+  replies     Comment[] @relation("commentReplies")
 }
 
 enum Titles {

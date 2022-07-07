@@ -1,5 +1,6 @@
 import * as yup from "yup";
 import { Titles } from "@prisma/client";
+import { TypedSchema } from "yup/lib/util/types";
 
 const titles = Object.values(Titles);
 
@@ -31,6 +32,17 @@ export const ResetPasswordSchema = yup.object().shape({
   email: yup.string().required().email(),
 });
 
-export type RegisterTestData = yup.InferType<typeof RegisterTestSchema>;
-export type RegisterData = yup.InferType<typeof RegisterSchema>;
-export type SignInData = yup.InferType<typeof SignInSchema>;
+export const PostFormSchema = yup.object().shape({
+  body: yup.string().required().max(128).min(10),
+});
+// <yup.InferType<T>
+type ConvertSchemaToType<T extends TypedSchema, B = yup.InferType<T>> = {
+  [K in keyof B as string extends K ? never : K]: B[K];
+};
+// for [x: string], x extends string, but string does not extend the value
+// if x as string extends string, then we know x is not literally defined
+
+export type RegisterTestData = ConvertSchemaToType<typeof RegisterTestSchema>;
+export type RegisterData = ConvertSchemaToType<typeof RegisterSchema>;
+export type SignInData = ConvertSchemaToType<typeof SignInSchema>;
+export type PostData = ConvertSchemaToType<typeof PostFormSchema>;

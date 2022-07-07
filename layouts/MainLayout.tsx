@@ -1,14 +1,19 @@
-import React, { ReactNode } from "react";
+import React, { FC, PropsWithChildren, ReactNode } from "react";
 import Navbar from "@components/Navbar";
 
-const MainLayout = ({ children }: { children: ReactNode }) => {
+const MainLayout: FC<PropsWithChildren<{ className?: string }>> = ({
+  children,
+  className,
+}) => {
   return (
-    <div className="px-4 pb-4">
+    <>
       <nav>
         <Navbar />
       </nav>
-      {children}
-    </div>
+      <main className={`px-4 md:px-12 py-4 ${className || ""}`}>
+        {children}
+      </main>
+    </>
   );
 };
 
