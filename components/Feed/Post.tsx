@@ -10,14 +10,13 @@ import { ExclamationCircleIcon } from "@heroicons/react/outline";
 
 const UserPost: FC = () => {
   const { user } = useAuth();
-  const { register, handleSubmit, formState, setError } = useForm<PostData>({
+  const { register, handleSubmit, formState, reset } = useForm<PostData>({
     resolver: yupResolver(PostFormSchema),
     mode: "onChange",
   });
 
   const onSubmit = handleSubmit(
-    async (data) => {
-      // formState.isSubmitting =
+    async (data, e) => {
       try {
         await new Promise((res) => setTimeout(res, 1000));
         const d = await fetch("/api/post", {
@@ -25,6 +24,7 @@ const UserPost: FC = () => {
           body: JSON.stringify(data),
         }).then((res) => res.json());
         console.log(d);
+        reset();
       } catch (err) {
         if (err instanceof Error) console.error("failed req");
       }
@@ -57,7 +57,7 @@ const UserPost: FC = () => {
           isTouched={formState.touchedFields.body}
         >
           {({ error, isValid, shouldDisplayError }) => (
-            <div className="w-full rounded-lg relative">
+            <div className="w-full rounded-lg relative shadow-md">
               <textarea
                 {...register("body")}
                 rows={5}

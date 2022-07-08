@@ -1,6 +1,7 @@
 import { verifyIdToken } from "@lib/auth";
-import { AfterLoginPage, BackendFirebaseToken } from "@lib/constants";
+import { AfterLoginPage, BACKEND_AUTH_TOKEN_KEY } from "@lib/constants";
 import { Role } from "@prisma/client";
+import { getCookie } from "cookies-next";
 import {
   returnURL,
   redirectToSignIn,
@@ -14,7 +15,10 @@ export const RequireServerSideAuth = <T = {}>(
   role: Role | "UNAUTHED" = "USER"
 ): ExtendedGetServerSideProps<T> => {
   const wrapped: ExtendedGetServerSideProps<T> = async (context) => {
-    const token = context.req.cookies[BackendFirebaseToken] || "";
+    const { req, res } = context;
+    const token =
+      getCookie(BACKEND_AUTH_TOKEN_KEY, { req, res })?.toString() || "";
+    // const token = context.req.cookies[BACKEND_AUTH_TOKEN_KEY] || "";
 
     const decodedToken = await verifyIdToken(token);
     const tokenVerified = Boolean(decodedToken);
@@ -66,7 +70,9 @@ export const SSWithUser = <T = {}>(
   role: Role | "UNAUTHED" = "USER"
 ): ExtendedGetServerSideProps<T> => {
   const wrapped: ExtendedGetServerSideProps<T> = async (context) => {
-    const token = context.req.cookies[BackendFirebaseToken] || "";
+    const { req, res } = context;
+    const token =
+      getCookie(BACKEND_AUTH_TOKEN_KEY, { req, res })?.toString() || "";
     const url = returnURL(context.req);
     const decodedToken = await verifyIdToken(token);
     if (!decodedToken) return redirectToSignIn(url);

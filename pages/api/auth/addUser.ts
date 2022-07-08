@@ -1,8 +1,6 @@
-import { verifyIdToken } from "@lib/auth";
+import { verifyAuthCookie } from "@lib/auth";
 import { StandardResponse } from "@lib/types/backend";
 import { NextApiRequest, NextApiResponse } from "next";
-import { getCookie } from "cookies-next";
-import { BackendFirebaseToken } from "@lib/constants";
 import prisma from "@lib/prisma";
 
 const addUserHandler = async (
@@ -10,11 +8,7 @@ const addUserHandler = async (
   res: NextApiResponse<StandardResponse>
 ) => {
   try {
-    const token = getCookie(BackendFirebaseToken, { req, res })?.toString();
-    if (!token) throw new Error("No cookie set");
-
-    const decodedToken = await verifyIdToken(token);
-    if (!decodedToken) throw new Error("Invalid token");
+    const decodedToken = await verifyAuthCookie(req, res);
 
     const user = await prisma.user.findFirst({
       where: {

@@ -1,10 +1,29 @@
+import { getCookie } from "cookies-next";
+import { verify } from "crypto";
 import { IncomingHttpHeaders } from "http";
+import { NextApiRequest, NextApiResponse } from "next";
+import { BACKEND_AUTH_TOKEN_KEY } from "./constants";
 import { getAuth } from "./firebase/admin";
 
 export const verifyIdToken = async (firebaseToken: string) => {
   return getAuth()
     .verifyIdToken(firebaseToken)
     .catch((_) => null);
+};
+
+export const verifyAuthCookie = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const token = getCookie(BACKEND_AUTH_TOKEN_KEY, { req, res })?.toString();
+  if (!token) throw new Error("No token set");
+
+  try {
+    const decodedToken = await getAuth().verifyIdToken(token);
+    return decodedToken;
+  } catch (err) {
+    throw err;
+  }
 };
 
 export const verifyIdTokenFromHeader = async (headers: IncomingHttpHeaders) => {

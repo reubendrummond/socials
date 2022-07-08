@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from "next";
 import { getAuth } from "@lib/firebase/admin";
-import { BackendFirebaseToken } from "@lib/constants";
+import { BACKEND_AUTH_TOKEN_KEY } from "@lib/constants";
+import { setCookie } from "cookies-next";
 
 type Data = {};
 
@@ -23,10 +24,11 @@ export default async function handler(
   return getAuth()
     .verifyIdToken(token)
     .then((_) => {
-      res.setHeader(
-        "set-cookie",
-        `${BackendFirebaseToken}=${token}; path=/; samesite=lax; httponly;`
-      );
+      setCookie(BACKEND_AUTH_TOKEN_KEY, token, { req, res });
+      // res.setHeader(
+      //   "set-cookie",
+      //   `${BackendFirebaseToken}=${token}; path=/; samesite=lax; httponly;`
+      // );
       return res.status(200).json({ data: "Token is legit" });
     })
     .catch((_) => {

@@ -1,38 +1,36 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { verifyIdToken, verifyIdTokenFromHeader } from "@lib/auth";
+import { verifyAuthCookie } from "@lib/auth";
 import { StandardResponse } from "@lib/types/backend";
-import { getCookie } from "cookies-next";
-import { BackendFirebaseToken } from "@lib/constants";
+import { PostFormSchema } from "@lib/forms/validationSchemas";
 import prisma from "@lib/prisma";
 
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<StandardResponse>
 ) {
-  const token = getCookie(BackendFirebaseToken, { req, res })?.toString();
   try {
-    if (!token) throw new Error("No cookie set");
-    const decodedToken = await verifyIdToken(token);
-    if (!decodedToken)
-      return res.status(403).json({
-        errors: { status: 403, detail: "Unauthorised" },
-      });
+    if (req.method !== "POST" || !req.body) throw new Error("Must post");
 
     // validate post
+    const fields = PostFormSchema.cast(req.body);
+    if (!(await PostFormSchema.isValid(fields)))
+      throw new Error("Data not valid");
+
+    // get user
+    const decodedToken = await verifyAuthCookie(req, res);
     const user = await prisma.user.findFirst({
       where: { uid: decodedToken.uid },
     });
+    if (!user) throw new Error("Error retrieving user");
 
-    if (user) {
-      const p = await prisma.post.create({
-        data: {
-          description: "A test post",
-          authorId: user.id,
-        },
-      });
+    const p = await prisma.post.create({
+      data: {
+        body: fields.body,
+        authorId: user.id,
+      },
+    });
 
-      res.status(201).json({ data: p });
-    }
+    res.status(201).json({ data: p });
   } catch (err) {
     res.status(400).json({
       data: err instanceof Error ? err.message : "err",
