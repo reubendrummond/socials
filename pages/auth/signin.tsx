@@ -1,14 +1,21 @@
 import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import AuthLayout from "layouts/AuthLayout";
-import React from "react";
+import React, { useEffect } from "react";
 import { GoogleLoginButton } from "@components/thirdPartyAuthButtons/GoogleLoginButton";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import { SignInForm } from "@components/Forms/SignInForm";
 import FormCard from "@components/Forms/FormCard";
+import { signIn, useSession, signOut } from "next-auth/react";
 
 const SignIn: CustomNextPage = () => {
   const { signInWithGoogle, isSubmitting, user } = useAuth();
+  const { data: session, status } = useSession();
+
+  useEffect(() => {
+    console.log("session", session);
+    console.log("status", status);
+  }, [session, status]);
 
   return (
     <AuthLayout type="signin">
@@ -34,8 +41,24 @@ const SignIn: CustomNextPage = () => {
           <div>
             <SignInForm />
           </div>
+          <div></div>
         </FormCard>
       </div>
+      <button
+        onClick={() =>
+          signIn("github", { callbackUrl: "/feed" })
+            .then((r) => {
+              console.log(JSON.stringify(r));
+            })
+            .catch((err) => {
+              console.log(err);
+            })
+        }
+        className="relative"
+      >
+        GitHub
+      </button>
+      <button onClick={() => signOut()}>Sign out</button>
     </AuthLayout>
   );
 };

@@ -1,13 +1,13 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import { getAuth } from "@lib/firebase/admin";
 import { BACKEND_AUTH_TOKEN_KEY } from "@lib/constants";
+import { verifyIdToken, verifyIdTokenFromHeader } from "@lib/auth";
+import { StandardResponse } from "@lib/types/backend";
 import { setCookie } from "cookies-next";
-
-type Data = {};
+import { getAuth } from "@lib/firebase/admin";
 
 export default async function handler(
   req: NextApiRequest,
-  res: NextApiResponse<Data>
+  res: NextApiResponse<StandardResponse>
 ) {
   const authHeader = req.headers.authorization;
   if (!authHeader)
@@ -24,11 +24,14 @@ export default async function handler(
   return getAuth()
     .verifyIdToken(token)
     .then((_) => {
-      setCookie(BACKEND_AUTH_TOKEN_KEY, token, { req, res });
-      // res.setHeader(
-      //   "set-cookie",
-      //   `${BackendFirebaseToken}=${token}; path=/; samesite=lax; httponly;`
-      // );
+      console.log("called");
+      setCookie(BACKEND_AUTH_TOKEN_KEY, token, {
+        req,
+        res,
+        httpOnly: true,
+        sameSite: "strict",
+        secure: process.env.NODE_ENV !== "development",
+      });
       return res.status(200).json({ data: "Token is legit" });
     })
     .catch((_) => {

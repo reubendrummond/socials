@@ -2,51 +2,50 @@ import { verifyIdToken } from "@lib/auth";
 import { AfterLoginPage, BACKEND_AUTH_TOKEN_KEY } from "@lib/constants";
 import { Role } from "@prisma/client";
 import { getCookie } from "cookies-next";
+import { unstable_getServerSession } from "next-auth";
 import {
   returnURL,
   redirectToSignIn,
   destinationWithNext,
   ExtendedGetServerSideProps,
-  userFromDecodedToken,
 } from "./utils";
+import { authOptions } from "pages/api/auth/[...nextauth]";
 
 export const RequireServerSideAuth = <T = {}>(
   getServerSideProps: ExtendedGetServerSideProps<T>,
   role: Role | "UNAUTHED" = "USER"
 ): ExtendedGetServerSideProps<T> => {
   const wrapped: ExtendedGetServerSideProps<T> = async (context) => {
-    const { req, res } = context;
-    const token =
-      getCookie(BACKEND_AUTH_TOKEN_KEY, { req, res })?.toString() || "";
-    // const token = context.req.cookies[BACKEND_AUTH_TOKEN_KEY] || "";
-
-    const decodedToken = await verifyIdToken(token);
-    const tokenVerified = Boolean(decodedToken);
+    const session = await unstable_getServerSession(
+      context.req,
+      context.res,
+      authOptions
+    );
 
     const url = returnURL(context.req);
 
-    if (!decodedToken && role === "UNAUTHED")
-      return getServerSideProps(context);
+    if (!session && role === "UNAUTHED") return getServerSideProps(context);
 
     // prevent unauthenticated users from visiting pages which require authentication
-    if (!decodedToken) {
+    if (!session) {
       // console.log("not verfied!");
       return redirectToSignIn(url);
     }
 
+    // change to has registered
     // get user to verify email if they have not
-    if (!decodedToken.email_verified) {
-      return {
-        redirect: {
-          permanent: false,
-          destination: destinationWithNext("/auth/verify", url),
-        },
-      };
-    }
+    // if (!decodedToken.email_verified) {
+    //   return {
+    //     redirect: {
+    //       permanent: false,
+    //       destination: destinationWithNext("/auth/verify", url),
+    //     },
+    //   };
+    // }
 
     // prevent authenticated users visiting auth pages like signin and register
     if (role === "UNAUTHED") {
-      if (tokenVerified) {
+      if (session) {
         return {
           redirect: {
             permanent: true,
@@ -56,8 +55,7 @@ export const RequireServerSideAuth = <T = {}>(
       }
     }
 
-    context.decodedToken = decodedToken;
-    context.user = userFromDecodedToken(decodedToken);
+    context.session = session;
 
     return getServerSideProps(context);
   };
@@ -66,19 +64,20 @@ export const RequireServerSideAuth = <T = {}>(
 };
 
 export const SSWithUser = <T = {}>(
-  getServerSideProps: ExtendedGetServerSideProps<T>,
-  role: Role | "UNAUTHED" = "USER"
+  getServerSideProps: ExtendedGetServerSideProps<T>
 ): ExtendedGetServerSideProps<T> => {
   const wrapped: ExtendedGetServerSideProps<T> = async (context) => {
-    const { req, res } = context;
-    const token =
-      getCookie(BACKEND_AUTH_TOKEN_KEY, { req, res })?.toString() || "";
-    const url = returnURL(context.req);
-    const decodedToken = await verifyIdToken(token);
-    if (!decodedToken) return redirectToSignIn(url);
+    const session = await unstable_getServerSession(
+      context.req,
+      context.res,
+      authOptions
+    );
+    if (!session) {
+      const url = returnURL(context.req);
+      return redirectToSignIn(url);
+    }
 
-    context.decodedToken = decodedToken;
-    context.user = userFromDecodedToken(decodedToken);
+    context.session = session;
 
     return getServerSideProps(context);
   };

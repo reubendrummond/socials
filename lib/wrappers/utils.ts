@@ -6,6 +6,7 @@ import {
   PreviewData,
   Redirect,
 } from "next";
+import { Session } from "next-auth";
 import { NextApiRequestCookies } from "next/dist/server/api-utils";
 import { ParsedUrlQuery } from "querystring";
 
@@ -14,8 +15,7 @@ export interface ExtendedContext<
   Q extends ParsedUrlQuery,
   D extends PreviewData
 > extends GetServerSidePropsContext<Q, D> {
-  decodedToken: DecodedIdToken;
-  user: UserSS;
+  session: Session;
 }
 
 export type ExtendedGetServerSideProps<
@@ -55,7 +55,6 @@ export const returnURL = (
     url = url?.replace(".json", "");
   }
 
-  console.log(url);
   return new URL(url, `http://${req.headers.host}`);
 };
 
@@ -67,20 +66,20 @@ export const destinationWithNext = (
   return `${destination}?next=${url.pathname.substring(1)}`;
 };
 
-export const userFromDecodedToken = (decodedToken: DecodedIdToken): UserSS => {
-  const {
-    uid,
-    email,
-    email_verified: emailVerified,
-    phone_number: phoneNumber,
-    picture: photoURL,
-  } = decodedToken;
+// export const userFromDecodedToken = (decodedToken: DecodedIdToken): UserSS => {
+//   const {
+//     uid,
+//     email,
+//     email_verified: emailVerified,
+//     phone_number: phoneNumber,
+//     picture: photoURL,
+//   } = decodedToken;
 
-  return {
-    uid,
-    email,
-    emailVerified,
-    phoneNumber,
-    photoURL,
-  };
-};
+//   return {
+//     uid,
+//     email,
+//     emailVerified,
+//     phoneNumber,
+//     photoURL,
+//   };
+// };

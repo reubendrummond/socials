@@ -7,10 +7,10 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<StandardResponse>
 ) {
-  removeCookies(BACKEND_AUTH_TOKEN_KEY, { req, res });
-  // res.setHeader(
-  //   "set-cookie",
-  //   `${BackendFirebaseToken}=deleted; path=/; samesite=lax; httponly;`
-  // );
-  return res.status(200).json({ data: "Token removed" });
+  try {
+    removeCookies(BACKEND_AUTH_TOKEN_KEY, { req, res });
+    return res.status(200).json({ data: "Token removed" });
+  } catch (err) {
+    return res.status(400).json({ data: "There was an error signing out" });
+  }
 }

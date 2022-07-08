@@ -91,12 +91,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       if (u) {
         try {
-          await addToken(u);
           window.localStorage.setItem(key, JSON.stringify(u));
-          const data = await fetch("/api/auth/addUser").then((res) =>
-            res.json()
-          );
-          console.log(data);
+          await addToken(u);
+          // const data = await fetch("/api/auth/addUser").then((res) =>
+          //   res.json()
+          // );
+          // console.log(data);
         } catch (err) {
           console.log(err);
           u = null;
@@ -331,15 +331,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const addToken = async (user: User) => {
     return user.getIdToken(true).then(async (t) => {
-      const res = await fetch("/api/auth/setCookie", {
+      const res = await fetch("/api/auth/signin", {
         method: "POST",
         headers: {
           authorization: `Bearer ${t}`,
         },
       });
       const data = await res.json();
-      setToken(t);
       return data;
+      // setCookies(BACKEND_AUTH_TOKEN_KEY, t, {
+      //   path: "/",
+      //   secure: process.env.NODE_ENV !== "development",
+      //   sameSite: "lax",
+      // });
+      setToken(t);
+      return t;
     });
   };
 

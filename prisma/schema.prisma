@@ -10,16 +10,19 @@ datasource db {
 }
 
 model User {
-  id        Int        @id @default(autoincrement())
-  uid       String     @unique
-  name      String?
-  dob       DateTime?
-  role      Role       @default(USER)
-  title     Titles?
-  posts     Post[]     @relation("userPosts")
-  comments  Comment[]  @relation("userComments")
-  reactions Reaction[] @relation("userReactions")
-  repliesTo Comment[]  @relation("repliesTo")
+  id           Int        @id @default(autoincrement())
+  uid          String     @unique
+  username     String     @unique
+  email        String
+  displayName  String
+  bio          String?
+  registeredAt DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  role         Role       @default(USER)
+  posts        Post[]     @relation("userPosts")
+  comments     Comment[]  @relation("userComments")
+  reactions    Reaction[] @relation("userReactions")
+  repliesTo    Comment[]  @relation("repliesTo")
 }
 
 model Post {
@@ -57,14 +60,6 @@ model Comment {
   reply       Comment?  @relation("commentReplies", fields: [replyId], references: [id], onUpdate: NoAction, onDelete: NoAction)
   replyTo     User?     @relation("repliesTo", fields: [replyUserId], references: [id])
   replies     Comment[] @relation("commentReplies")
-}
-
-enum Titles {
-  Mr
-  Mrs
-  Ms
-  Miss
-  Lord
 }
 
 enum Role {

@@ -11,12 +11,16 @@ import PageLoader from "@components/Loaders/Page";
 import { AuthProvider } from "@lib/hooks/useAuth";
 import { RouteGuard } from "@components/RouteGuard";
 import { AppName } from "@lib/constants";
+import { SessionProvider } from "next-auth/react";
 
 type ExtendedAppProps = AppProps & {
   Component: CustomNextPage;
 };
 
-const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
+const MyApp = ({
+  Component,
+  pageProps: { session, ...pageProps },
+}: ExtendedAppProps) => {
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const start = () => setLoading(true);
@@ -38,7 +42,8 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
         <title>{Component.title || AppName}</title>
       </Head>
       <ThemeProvider attribute="class">
-        <AuthProvider>
+        {/* <AuthProvider> */}
+        <SessionProvider session={session}>
           <RouteGuard authRequired={Component.authRequired} strict={false}>
             {Component.layout ? (
               Component.layout === "main" ? (
@@ -54,7 +59,8 @@ const MyApp = ({ Component, pageProps }: ExtendedAppProps) => {
               <Component {...pageProps} />
             )}
           </RouteGuard>
-        </AuthProvider>
+        </SessionProvider>
+        {/* </AuthProvider> */}
       </ThemeProvider>
     </>
   );

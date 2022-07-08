@@ -1,5 +1,4 @@
 import { getCookie } from "cookies-next";
-import { verify } from "crypto";
 import { IncomingHttpHeaders } from "http";
 import { NextApiRequest, NextApiResponse } from "next";
 import { BACKEND_AUTH_TOKEN_KEY } from "./constants";

@@ -1,6 +1,6 @@
 import { AfterLoginPage, AuthRequiredOptions, LoginPage } from "@lib/constants";
-import { useAuth } from "@lib/hooks/useAuth";
 import usePush from "@lib/hooks/usePush";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import { ReactNode, useEffect } from "react";
 import PageLoader from "./Loaders/Page";
@@ -15,7 +15,7 @@ export const RouteGuard = ({
   authRequired?: AuthRequiredOptions;
   strict: boolean;
 }) => {
-  const { user, isAuthenticating } = useAuth();
+  const { data: session, status } = useSession();
   const router = useRouter();
   const push = usePush();
   useEffect(() => {
@@ -23,10 +23,10 @@ export const RouteGuard = ({
     if (!authRequired) return;
 
     // wait to finish authenticating
-    if (isAuthenticating) return;
+    if (status === "loading") return;
 
     // page requires unauthenticated state
-    if (user && authRequired === "UNAUTHED") {
+    if (status === "authenticated" && authRequired === "UNAUTHED") {
       // later: go to 'from' if exists else:
       const next = router.query.next as string;
       if (next) push("/" + next);
@@ -35,13 +35,18 @@ export const RouteGuard = ({
     }
 
     // page requires authentication
-    if (!user && authRequired && authRequired !== "UNAUTHED") {
+    if (
+      status === "unauthenticated" &&
+      authRequired &&
+      authRequired !== "UNAUTHED"
+    ) {
+      console.log("here");
       push(LoginPage);
       return;
     }
-  }, [user, isAuthenticating, authRequired, push, router]);
+  }, [session, status, authRequired, push, router]);
 
-  if (strict && authRequired && isAuthenticating) return <PageLoader />;
+  if (strict && authRequired && status === "loading") return <PageLoader />;
 
   return <>{children}</>;
 };

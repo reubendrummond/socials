@@ -1,16 +1,18 @@
 export interface StandardResponse {
-  errors?: StandardErrorResponse | StandardErrorResponse[];
+  error?: StandardErrorResponse | StandardErrorResponse[];
   data?: {} | {}[];
   meta?: StandardResponseMetaData;
   links?: StandardResponseLinks | StandardResponseLinks[];
 }
 
-interface StandardErrorResponse {
-  id?: string;
-  status?: ErrorStatusCodes;
-  title?: string;
-  detail?: string;
-}
+type StandardErrorResponse =
+  | {
+      id?: string;
+      status?: ErrorStatusCodes;
+      title?: string;
+      detail?: string;
+    }
+  | string;
 
 interface StandardResponseMetaData {}
 

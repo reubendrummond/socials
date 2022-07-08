@@ -8,6 +8,7 @@ import { Menu } from "@headlessui/react";
 import { useRouter } from "next/router";
 import { Transition } from "@headlessui/react";
 import { UserCircleIcon } from "@heroicons/react/outline";
+import { useSession, signOut } from "next-auth/react";
 
 const Navbar = () => {
   return (
@@ -25,28 +26,26 @@ const Navbar = () => {
 };
 
 const RightNav = () => {
-  const { user, signOut } = useAuth();
+  const { data: session, status } = useSession();
+  const user = session ? session.user : null;
   const router = useRouter();
-  const onSignout = () => {
-    router.replace("/auth/signin");
-  };
 
   return (
     <>
       {
         <Transition
           show={user !== undefined}
-          className="flex flex-row items-center gap-x-4"
+          className="flex flex-row items-center gap-x-4 z-10"
           enter="transition-opacity duration-800"
           enterFrom="opacity-0"
           enterTo="opacity-100"
         >
-          {user?.emailVerified ? (
+          {status === "authenticated" && user ? (
             <Menu as="div" className="relative h-[40px]">
               <Menu.Button className="hover:cursor-pointer h-full">
-                {user.photoURL ? (
+                {user.image ? (
                   <Image
-                    src={user.photoURL || "/"}
+                    src={user.image || "/"}
                     alt="photo"
                     width="40px"
                     height="40px"
@@ -60,9 +59,9 @@ const RightNav = () => {
                 )}
               </Menu.Button>
               <Menu.Items className="absolute right-0 mt-2 bg-gray-200 dark:bg-gray-800 rounded-md p-2 flex flex-col items-end">
-                <p>{user.displayName}</p>
+                <p>{user.name}</p>
                 <p>{user.email}</p>
-                <button onClick={() => signOut(onSignout)}>Sign out</button>
+                <button onClick={() => signOut()}>Sign out</button>
               </Menu.Items>
             </Menu>
           ) : (
