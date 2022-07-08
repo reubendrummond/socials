@@ -14,8 +14,8 @@ const Feed: CustomNextPage = () => {
 Feed.title = "Feed";
 Feed.authRequired = "USER";
 
-// export const getServerSideProps = RequireServerSideAuth<{}>(async (context) => {
-//   return { props: {} };
-// }, "USER");
+export const getServerSideProps = RequireServerSideAuth<{}>(async (context) => {
+  return { props: {} };
+}, "USER");
 
 export default Feed;

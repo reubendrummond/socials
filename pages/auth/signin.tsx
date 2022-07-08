@@ -7,6 +7,7 @@ import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import { SignInForm } from "@components/Forms/SignInForm";
 import FormCard from "@components/Forms/FormCard";
 import { signIn, useSession, signOut } from "next-auth/react";
+import { REDIRECT_AFTER_LOGIN_PAGE } from "@lib/constants";
 
 const SignIn: CustomNextPage = () => {
   const { signInWithGoogle, isSubmitting, user } = useAuth();
@@ -46,13 +47,7 @@ const SignIn: CustomNextPage = () => {
       </div>
       <button
         onClick={() =>
-          signIn("github", { callbackUrl: "/feed" })
-            .then((r) => {
-              console.log(JSON.stringify(r));
-            })
-            .catch((err) => {
-              console.log(err);
-            })
+          signIn("github", { callbackUrl: REDIRECT_AFTER_LOGIN_PAGE })
         }
         className="relative"
       >

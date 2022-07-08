@@ -1,5 +1,9 @@
 import { verifyIdToken } from "@lib/auth";
-import { AfterLoginPage, BACKEND_AUTH_TOKEN_KEY } from "@lib/constants";
+import {
+  AFTER_LOGIN_PAGE,
+  BACKEND_AUTH_TOKEN_KEY,
+  NEW_USER_PAGE,
+} from "@lib/constants";
 import { Role } from "@prisma/client";
 import { getCookie } from "cookies-next";
 import { unstable_getServerSession } from "next-auth";
@@ -33,15 +37,13 @@ export const RequireServerSideAuth = <T = {}>(
     }
 
     // change to has registered
-    // get user to verify email if they have not
-    // if (!decodedToken.email_verified) {
-    //   return {
-    //     redirect: {
-    //       permanent: false,
-    //       destination: destinationWithNext("/auth/verify", url),
-    //     },
-    //   };
-    // }
+    if (!session.user?.username)
+      return {
+        redirect: {
+          destination: NEW_USER_PAGE,
+          permanent: false,
+        },
+      };
 
     // prevent authenticated users visiting auth pages like signin and register
     if (role === "UNAUTHED") {
@@ -49,7 +51,7 @@ export const RequireServerSideAuth = <T = {}>(
         return {
           redirect: {
             permanent: true,
-            destination: AfterLoginPage,
+            destination: AFTER_LOGIN_PAGE,
           },
         };
       }
