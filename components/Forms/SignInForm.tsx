@@ -2,7 +2,7 @@ import { Formik, Form, Field } from "formik";
 import { SignInSchema } from "@lib/forms/validationSchemas";
 import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
-import { StyledInput, SubmitButton } from "./StyledInputs";
+import { StyledInput, SubmitButton } from "./Formik/StyledInputs";
 import { resetInput } from "./utils";
 import Link from "next/link";
 
@@ -19,22 +19,11 @@ export const SignInForm = () => {
           setMessage("Submitted successfully!");
           actions.resetForm();
         } catch (err) {
-          //   console.log(err);
           setMessage("There was an error submitting!");
-          // reset password field
           resetInput(actions, "password");
-          // actions.setFieldValue("password", "", false);
-          // actions.setFieldTouched("password", false);
-          //   actions.setFieldError("password", ":(");
         } finally {
           actions.setSubmitting(false);
         }
-        // const res = await fetch("/api/register", {
-        //   method: "POST",
-        //   body: JSON.stringify(values),
-        // });
-        // console.log(await res.json());
-        // console.log(values);
       }}
       initialValues={{
         email: "",
@@ -51,6 +40,7 @@ export const SignInForm = () => {
               label="Email"
               placeholder="email"
               component={StyledInput}
+              disabled={true}
             />
             <Field
               name="password"
@@ -58,6 +48,7 @@ export const SignInForm = () => {
               label="Password"
               placeholder="password"
               component={StyledInput}
+              disabled={true}
             />
             <Link href="/auth/reset" passHref>
               <a className="text-sm underline w-fit ml-auto">
@@ -68,6 +59,7 @@ export const SignInForm = () => {
               className="py-3 text-white rounded-lg bg-gradient-to-r from-primary to-primary-light mt-4 hover:opacity-90 disabled:opacity-30"
               type="submit"
               disabled={
+                true ||
                 isSubmitting ||
                 Boolean(user) ||
                 !props.isValid ||

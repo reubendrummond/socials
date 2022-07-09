@@ -3,7 +3,7 @@ import { RegisterSchema } from "@lib/forms/validationSchemas";
 import { useState, useRef, useEffect } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput, SubmitButton } from "./StyledInputs";
-import { onEnterDown, onEnterUp, resetInput } from "./utils";
+import { resetInput } from "../utils";
 
 export const RegisterForm = () => {
   const [message, setMessage] = useState("");

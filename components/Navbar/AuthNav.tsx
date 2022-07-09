@@ -1,5 +1,5 @@
 import { LightningBoltIcon } from "@heroicons/react/solid";
-import { RegisterPage, LoginPage } from "@lib/constants";
+import { REGISTER_PAGE, SIGNIN_PAGE } from "@lib/constants";
 import Link from "next/link";
 import React, { FC } from "react";
 import ThemeToggle from "@components/ThemeToggle";
@@ -16,9 +16,9 @@ export const AuthNav: FC<AuthNavProps> = ({ type }) => {
       </Link>
       <div className="flex gap-x-4 items-center">
         {type === "signin" ? (
-          <Link href={RegisterPage}>Register</Link>
+          <Link href={REGISTER_PAGE}>Register</Link>
         ) : type === "register" || type === "reset" ? (
-          <Link href={LoginPage}>Sign In</Link>
+          <Link href={SIGNIN_PAGE}>Sign In</Link>
         ) : (
           <></>
         )}

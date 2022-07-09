@@ -3,6 +3,7 @@ import NextAuth from "next-auth/next";
 import GithubAuthProvider from "next-auth/providers/github";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "lib/prisma";
+import { NEW_USER_PAGE, SIGNIN_PAGE } from "@lib/constants";
 
 export const authOptions: NextAuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -14,7 +15,11 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     session({ session, token, user }) {
-      if (session.user) session.user.id = token.uid;
+      if (session.user && token) {
+        session.user.id = token.uid;
+        session.user.username = token.username;
+      }
+
       return session;
     },
     async jwt({ token, user, account, isNewUser }) {
@@ -28,7 +33,7 @@ export const authOptions: NextAuthOptions = {
           },
         });
         token.uid = user.id;
-        token.username = u?.username ? u?.username : undefined;
+        token.username = u?.username || null;
       }
 
       return token;
@@ -37,6 +42,11 @@ export const authOptions: NextAuthOptions = {
   session: {
     strategy: "jwt",
   },
+  pages: {
+    signIn: SIGNIN_PAGE,
+    newUser: NEW_USER_PAGE,
+  },
+  events: {},
 };
 
 export default NextAuth(authOptions);

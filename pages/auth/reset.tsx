@@ -2,8 +2,8 @@ import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import React, { useEffect, useState } from "react";
 import { RequireServerSideAuth, SSWithUser } from "@lib/wrappers/SSAuth";
-import FormCard from "@components/Forms/FormCard";
-import { ResetPasswordForm } from "@components/Forms/ResetPasswordForm";
+import FormCard from "@components/Forms/AuthFormCard";
+import { ResetPasswordForm } from "@components/Forms/Formik/ResetPasswordForm";
 import AuthLayout from "layouts/AuthLayout";
 
 const Verify: CustomNextPage = () => {

@@ -22,10 +22,16 @@ export const getStaticProps: GetStaticProps<ProfileProps> = async (context) => {
     const username = context.params?.username;
     if (typeof username !== "string")
       throw new Error("Invalid username supplied");
-
     const user = await prisma.user.findFirst({
       where: {
-        id: Number(username),
+        username,
+      },
+      select: {
+        username: true,
+        email: true,
+        name: true,
+        image: true,
+        bio: true,
       },
     });
 
@@ -33,7 +39,7 @@ export const getStaticProps: GetStaticProps<ProfileProps> = async (context) => {
 
     return {
       props: {
-        user,
+        user: user as User,
       },
       revalidate: 60,
     };

@@ -7,10 +7,11 @@ export default async function handler(
   res: NextApiResponse<StandardResponse>
 ) {
   try {
-    const id = Number(req.query.id);
+    const username = req.query.username;
+
     const u = await prisma.user.findFirst({
       where: {
-        id,
+        username: Array.isArray(username) ? username[0] : username,
       },
     });
 

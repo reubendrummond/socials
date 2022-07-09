@@ -25,6 +25,44 @@ export const ResetPasswordSchema = yup.object().shape({
 export const PostFormSchema = yup.object().shape({
   body: yup.string().required().max(128).min(10),
 });
+
+export const UserRegistrationSchema = yup.object().shape({
+  username: yup
+    .string()
+    .required("Enter a username")
+    .min(6, "Username must be at least 6 characters long")
+    .matches(/^(?=.*[aA-zZ])[aA-zA\d]+$/, "Invalid username")
+    .test(
+      "checkUsernameUnique",
+      "Username unavailable",
+      async (username, { createError }) => {
+        if (typeof username === "string" && username.length < 6) return false;
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 3000);
+        try {
+          const res: Response = await fetch(`/api/user/${username}`, {
+            signal: controller.signal,
+          });
+
+          clearTimeout(timeout);
+
+          if (res.status === 404) return true;
+          if (!res.ok)
+            return createError({
+              message: "There was an error validating the username",
+            });
+
+          const { data } = await res.json();
+          return !data.username;
+        } catch (err) {
+          return createError({
+            message: "Username cannot be validated right now",
+          });
+        }
+      }
+    ),
+});
+
 // <yup.InferType<T>
 type ConvertSchemaToType<T extends TypedSchema, B = yup.InferType<T>> = {
   [K in keyof B as string extends K ? never : K]: B[K];
@@ -35,3 +73,6 @@ type ConvertSchemaToType<T extends TypedSchema, B = yup.InferType<T>> = {
 export type RegisterData = ConvertSchemaToType<typeof RegisterSchema>;
 export type SignInData = ConvertSchemaToType<typeof SignInSchema>;
 export type PostData = ConvertSchemaToType<typeof PostFormSchema>;
+export type UserRegistrationData = ConvertSchemaToType<
+  typeof UserRegistrationSchema
+>;

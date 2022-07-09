@@ -1,22 +1,30 @@
-import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import AuthLayout from "layouts/AuthLayout";
-import React, { useEffect } from "react";
-import { GoogleLoginButton } from "@components/thirdPartyAuthButtons/GoogleLoginButton";
+import React, { useEffect, useState } from "react";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import { SignInForm } from "@components/Forms/SignInForm";
-import FormCard from "@components/Forms/FormCard";
-import { signIn, useSession, signOut } from "next-auth/react";
-import { REDIRECT_AFTER_LOGIN_PAGE } from "@lib/constants";
+import FormCard from "@components/Forms/AuthFormCard";
+import { signIn, useSession } from "next-auth/react";
+import {
+  GitHubSignInButton,
+  GoogleSignInButton,
+} from "components/OAuthProviderButtons";
+import { AFTER_SIGNIN_PAGE } from "@lib/constants";
 
 const SignIn: CustomNextPage = () => {
-  const { signInWithGoogle, isSubmitting, user } = useAuth();
-  const { data: session, status } = useSession();
+  const { status } = useSession();
+  const [disabled, setDisabled] = useState(true);
 
   useEffect(() => {
-    console.log("session", session);
-    console.log("status", status);
-  }, [session, status]);
+    setDisabled(status !== "unauthenticated");
+  }, [status]);
+
+  const signInWithProvider = (provider: "github" | "google") => {
+    return () => {
+      setDisabled(true);
+      signIn(provider, { callbackUrl: AFTER_SIGNIN_PAGE });
+    };
+  };
 
   return (
     <AuthLayout type="signin">
@@ -26,12 +34,15 @@ const SignIn: CustomNextPage = () => {
         <div className="absolute bg-primary-light w-96 h-96 rounded-full mix-blend-multiply dark:mix-blend-plus-lighter filter blur-lg animate-blob opacity-50 -bottom-14 -right-20" />
         <FormCard>
           <h2 className="text-center font-semibold">Sign In</h2>
-          <div className="flex flex-col justify-center">
-            <GoogleLoginButton
-              onClick={() => signInWithGoogle()}
-              disabled={Boolean(user || isSubmitting)}
+          <div className="flex flex-col justify-center gap-y-4">
+            <GoogleSignInButton
+              disabled={true || disabled}
+              signIn={signInWithProvider("google")}
             />
-            {/* another login provider? */}
+            <GitHubSignInButton
+              disabled={disabled}
+              signIn={signInWithProvider("github")}
+            />
           </div>
           <div className="flex w-fit self-center items-center gap-x-1">
             <div className="h-[1px] w-[20px] bg-gray-500" />
@@ -45,15 +56,6 @@ const SignIn: CustomNextPage = () => {
           <div></div>
         </FormCard>
       </div>
-      <button
-        onClick={() =>
-          signIn("github", { callbackUrl: REDIRECT_AFTER_LOGIN_PAGE })
-        }
-        className="relative"
-      >
-        GitHub
-      </button>
-      <button onClick={() => signOut()}>Sign out</button>
     </AuthLayout>
   );
 };

@@ -1,5 +1,5 @@
-import FormCard from "@components/Forms/FormCard";
-import { RegisterForm } from "@components/Forms/RegisterForm";
+import FormCard from "@components/Forms/AuthFormCard";
+import { RegisterForm } from "@components/Forms/Formik/RegisterForm";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
 import AuthLayout from "layouts/AuthLayout";
