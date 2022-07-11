@@ -1,23 +1,22 @@
-import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { userInfo } from "os";
 
 const Account: CustomNextPage = () => {
-  const { user } = useAuth();
+  const { data: session } = useSession();
   return (
     <MainLayout>
       <div>
         <Image
-          src={user?.photoURL || "/placeholder"}
+          src={session?.user?.image || "/placeholder"}
           alt={"User photo"}
           width="80px"
           height="80px"
         />
-        <h2>{user?.displayName}</h2>
-        <h4>{user?.email}</h4>
+        <h2>{session?.user?.username}</h2>
+        <h4>{session?.user?.email}</h4>
       </div>
     </MainLayout>
   );

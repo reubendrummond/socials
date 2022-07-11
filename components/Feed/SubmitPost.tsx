@@ -1,19 +1,19 @@
 import { BACKUP_PROFILE_IMAGE } from "@lib/constants";
-import { useAuth } from "@lib/hooks/useAuth";
 import Image from "next/image";
 import { FC } from "react";
 import { PostForm } from "@components/Forms/PostForm";
+import { useSession } from "next-auth/react";
 
 const UserPost: FC = () => {
-  const { user } = useAuth();
+  const { data: session } = useSession();
 
   return (
-    <div className="flex flex-col gap-y-2 items-center w-full justify-end">
+    <div className="flex flex-col gap-y-2 items-center w-full px-4">
       <div className="flex items-center gap-x-3">
         <div className="w-12 rounded-full overflow-clip">
-          {user && (
+          {session?.user && (
             <Image
-              src={user?.photoURL || BACKUP_PROFILE_IMAGE}
+              src={session.user.image || BACKUP_PROFILE_IMAGE}
               width="32px"
               height="32px"
               layout="responsive"
@@ -21,7 +21,7 @@ const UserPost: FC = () => {
             />
           )}
         </div>
-        <p>{user?.displayName}</p>
+        <p>{session?.user?.username}</p>
       </div>
       <PostForm />
     </div>

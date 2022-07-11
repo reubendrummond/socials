@@ -3,7 +3,7 @@ import PostItem from "@components/Feed/PostItem";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
-import useSWR, { mutate } from "swr";
+import useSWR from "swr";
 
 const Feed: CustomNextPage = () => {
   const fetcher = (...args: any) =>

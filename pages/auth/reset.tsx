@@ -1,4 +1,3 @@
-import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import React, { useEffect, useState } from "react";
 import {
@@ -6,7 +5,6 @@ import {
   SSWithUser,
 } from "@lib/wrappers/getServerSidePropsWrappers";
 import FormCard from "@components/Forms/AuthFormCard";
-import { ResetPasswordForm } from "@components/Forms/Formik/ResetPasswordForm";
 import AuthLayout from "layouts/AuthLayout";
 
 const Verify: CustomNextPage = () => {
@@ -17,7 +15,7 @@ const Verify: CustomNextPage = () => {
       <div className="relative w-full max-w-md">
         <FormCard>
           <h2>Enter your email</h2>
-          <ResetPasswordForm />
+          {/* <ResetPasswordForm /> */}
         </FormCard>
       </div>
     </AuthLayout>

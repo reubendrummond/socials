@@ -1,4 +1,3 @@
-import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
@@ -6,7 +5,6 @@ import { SSWithUser } from "@lib/wrappers/getServerSidePropsWrappers";
 import usePush from "@lib/hooks/usePush";
 
 const Verify: CustomNextPage = () => {
-  const { sendEmailVerificationCode, user, onUserCredChanged } = useAuth();
   const [emailSent, setEmailSent] = useState(false);
   const push = usePush();
   const router = useRouter();

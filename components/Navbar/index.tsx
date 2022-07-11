@@ -2,10 +2,8 @@ import Link from "next/link";
 import React, { useMemo } from "react";
 import ThemeToggle from "@components/ThemeToggle";
 import { LightningBoltIcon } from "@heroicons/react/solid";
-import { useAuth } from "@lib/hooks/useAuth";
 import Image from "next/image";
 import { Menu } from "@headlessui/react";
-import { useRouter } from "next/router";
 import { Transition } from "@headlessui/react";
 import { UserCircleIcon } from "@heroicons/react/outline";
 import { useSession, signOut } from "next-auth/react";
@@ -28,7 +26,6 @@ const Navbar = () => {
 const RightNav = () => {
   const { data: session, status } = useSession();
   const user = session ? session.user : null;
-  const router = useRouter();
 
   return (
     <>

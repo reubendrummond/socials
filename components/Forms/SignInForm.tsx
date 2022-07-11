@@ -1,29 +1,27 @@
 import { Formik, Form, Field } from "formik";
 import { SignInSchema } from "@lib/forms/validationSchemas";
 import { useState } from "react";
-import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput, SubmitButton } from "./Formik/StyledInputs";
 import { resetInput } from "./utils";
 import Link from "next/link";
 
 export const SignInForm = () => {
   const [message, setMessage] = useState("");
-  const { isSubmitting, user, signIn } = useAuth();
 
   return (
     <Formik
       onSubmit={async (values, actions) => {
-        try {
-          actions.setSubmitting(true);
-          const { data } = await signIn(values.email, values.password);
-          setMessage("Submitted successfully!");
-          actions.resetForm();
-        } catch (err) {
-          setMessage("There was an error submitting!");
-          resetInput(actions, "password");
-        } finally {
-          actions.setSubmitting(false);
-        }
+        // try {
+        //   actions.setSubmitting(true);
+        //   const { data } = await signIn(values.email, values.password);
+        //   setMessage("Submitted successfully!");
+        //   actions.resetForm();
+        // } catch (err) {
+        //   setMessage("There was an error submitting!");
+        //   resetInput(actions, "password");
+        // } finally {
+        //   actions.setSubmitting(false);
+        // }
       }}
       initialValues={{
         email: "",
@@ -60,8 +58,6 @@ export const SignInForm = () => {
               type="submit"
               disabled={
                 true ||
-                isSubmitting ||
-                Boolean(user) ||
                 !props.isValid ||
                 props.isSubmitting ||
                 props.values === props.initialValues

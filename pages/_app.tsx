@@ -8,7 +8,6 @@ import MainLayout from "layouts/MainLayout";
 import { useEffect, useState } from "react";
 import { Router } from "next/router";
 import PageLoader from "@components/Loaders/Page";
-import { AuthProvider } from "@lib/hooks/useAuth";
 import { RouteGuard } from "@components/RouteGuard";
 import { AppName } from "@lib/constants";
 import { SessionProvider } from "next-auth/react";
