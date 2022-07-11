@@ -8,7 +8,7 @@ const UserPost: FC = () => {
   const { user } = useAuth();
 
   return (
-    <div className="flex flex-col gap-y-2 items-center w-full max-w-sm px-4 justify-end">
+    <div className="flex flex-col gap-y-2 items-center w-full justify-end">
       <div className="flex items-center gap-x-3">
         <div className="w-12 rounded-full overflow-clip">
           {user && (

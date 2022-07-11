@@ -1,8 +1,10 @@
 import { ExclamationCircleIcon } from "@heroicons/react/solid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { PostData, PostFormSchema } from "@lib/forms/validationSchemas";
+import { useSession } from "next-auth/react";
 import React from "react";
 import { useForm } from "react-hook-form";
+import useSWR, { mutate } from "swr";
 import { StyledInput } from "./utils";
 
 export const PostForm = () => {
@@ -11,14 +13,33 @@ export const PostForm = () => {
     mode: "onChange",
   });
 
+  const { data } = useSWR("/api/posts");
+  const { data: session } = useSession();
+
+  // get form data and mutate the existing posts list
+  const submitAndReturnPosts = async (formData: any) => {
+    await new Promise((res) => setTimeout(res, 1000));
+
+    const res = await fetch("/api/posts", {
+      method: "POST",
+      body: JSON.stringify(formData),
+    }).then((res) => res.json());
+
+    await new Promise((res) => setTimeout(res, 3000));
+    return [res.data.post, ...data];
+  };
+
   const onSubmit = handleSubmit(
-    async (data, e) => {
+    async (formData, e) => {
       try {
-        await new Promise((res) => setTimeout(res, 1000));
-        const d = await fetch("/api/post", {
-          method: "POST",
-          body: JSON.stringify(data),
-        }).then((res) => res.json());
+        await mutate("/api/posts", submitAndReturnPosts(formData), {
+          optimisticData: [
+            { user: session?.user, body: formData.body },
+            ...data,
+          ],
+          rollbackOnError: true,
+        });
+
         reset();
       } catch (err) {
         if (err instanceof Error) console.error("failed req");
