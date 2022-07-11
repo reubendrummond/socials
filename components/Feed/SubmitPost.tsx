@@ -8,8 +8,8 @@ const UserPost: FC = () => {
   const { data: session } = useSession();
 
   return (
-    <div className="flex flex-col gap-y-2 items-center w-full px-4">
-      <div className="flex items-center gap-x-3">
+    <div className="flex flex-col gap-y-2 items-center w-full">
+      <div className="flex items-center gap-x-3 w-full">
         <div className="w-12 rounded-full overflow-clip">
           {session?.user && (
             <Image

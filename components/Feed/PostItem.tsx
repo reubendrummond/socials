@@ -14,7 +14,7 @@ interface UserHeadingProps {
 
 const PostItem: FC<PostItemProps> = ({ post }) => {
   return (
-    <div className="flex flex-col gap-y-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 overflow-clip">
+    <div className="flex flex-col gap-y-2 w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 overflow-clip flex-start">
       <UserHeading post={post} />
       <p>{post.body}</p>
     </div>
@@ -25,7 +25,7 @@ const UserHeading: FC<UserHeadingProps> = ({ post }) => {
   const user = post.user;
 
   return (
-    <div className="w-full flex gap-x-2 items-center">
+    <div className="w-full flex flex-row gap-x-2 items-center">
       <div className="w-10 ">
         <Image
           src={user?.image || BACKUP_PROFILE_IMAGE}

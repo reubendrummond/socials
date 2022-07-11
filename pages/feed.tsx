@@ -15,6 +15,7 @@ const Feed: CustomNextPage = () => {
   return (
     <MainLayout className="flex flex-col items-center w-full max-w-md mx-auto text-left">
       <h3 className="w-full">What&apos;s on your mind?</h3>
+
       <SubmitPost />
       <div className="flex flex-col w-full my-4 gap-y-2">
         {posts?.map((post: any) => (
