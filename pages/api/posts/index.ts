@@ -1,11 +1,28 @@
-import { StandardResponse } from "@lib/types/backend";
-import { NextApiRequest, NextApiResponse } from "next";
 import prisma from "@lib/prisma";
+import { PostFormSchema } from "@lib/forms/validationSchemas";
+import ApiRouteHandler, {
+  HandlerNoAuth,
+  HandlerWithAuth,
+} from "@lib/api/wrappers";
 
-export default async function handler(
-  req: NextApiRequest,
-  res: NextApiResponse<StandardResponse>
-) {
+const handlePOST: HandlerWithAuth = async (req, res) => {
+  // validate post
+  const fields = PostFormSchema.cast(req.body);
+
+  if (!fields.body || !(await PostFormSchema.isValid(fields)))
+    throw new Error("Data not valid");
+
+  const p = await prisma.post.create({
+    data: {
+      body: fields.body,
+      userId: req.session.user.id,
+    },
+  });
+
+  res.status(201).json({ success: true, data: p });
+};
+
+const handleGET: HandlerNoAuth = async (req, res) => {
   try {
     const limit = Number(req.query.limit);
     const take = limit > 0 && limit < 20 ? limit : 10;
@@ -13,29 +30,44 @@ export default async function handler(
     const posts = await prisma.post.findMany({
       take,
       include: {
-        Reaction: {
+        reactions: {
           select: {
             id: true,
           },
         },
-        Comment: true,
+        comments: true,
         _count: {
           select: {
-            Comment: true,
-            Reaction: true,
+            comments: true,
+            reactions: true,
           },
         },
       },
     });
 
-    if (!posts) return res.status(404).json({ data: "Not found" });
+    if (!posts) throw new Error("No posts found");
 
     return res.status(200).json({
+      success: true,
       data: posts,
     });
   } catch (err) {
     return res.status(400).json({
-      data: err instanceof Error ? err.message : "There was an error",
+      success: false,
+      error: {
+        status: 400,
+        message: err instanceof Error ? err.message : "There was an error",
+      },
     });
   }
-}
+};
+
+const handler = ApiRouteHandler({
+  handleGET,
+  handlePOST: {
+    authRequired: true,
+    handler: handlePOST,
+  },
+});
+
+export default handler;

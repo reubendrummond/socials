@@ -20,12 +20,12 @@ export const NewUserForm = () => {
     });
   const [loading, setLoading] = useState(false);
   const [username, setUsername] = useState("");
-  const { data: session } = useSession();
   const [isSuccessful, setIsSuccessful] = useState(false);
   const router = useRouter();
+  const { data: session } = useSession();
 
   const onSubmit = handleSubmit(async (values) => {
-    return fetch("/api/user/update", {
+    return fetch(`/api/users/${session?.user?.id}/update`, {
       method: "PATCH",
       body: JSON.stringify({
         username: values.username,
@@ -33,7 +33,7 @@ export const NewUserForm = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setIsSuccessful(true);
+        if (data.success) setIsSuccessful(true);
         router.push(AFTER_SIGNIN_PAGE);
       })
       .catch((err) => {

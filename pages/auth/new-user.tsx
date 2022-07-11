@@ -1,6 +1,6 @@
 import { NewUserForm } from "@components/Forms/NewUserForm";
 import { AFTER_SIGNIN_PAGE, SIGNIN_PAGE } from "@lib/constants";
-import { SSWithUser } from "@lib/wrappers/SSAuth";
+import { SSWithUser } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
 import React from "react";
 

@@ -1,26 +1,34 @@
-export interface StandardResponse {
-  error?: StandardErrorResponse | StandardErrorResponse[];
-  data?: {} | {}[];
+export type StandardResponse = StandardSuccessResponse | StandardErrorResponse;
+
+interface StandardSuccessResponse {
+  success: true;
+  data: {};
   meta?: StandardResponseMetaData;
   links?: StandardResponseLinks | StandardResponseLinks[];
 }
 
-type StandardErrorResponse =
-  | {
-      id?: string;
-      status?: ErrorStatusCodes;
-      title?: string;
-      detail?: string;
-    }
-  | string;
+interface StandardErrorResponse
+  extends Omit<StandardSuccessResponse, "success" | "data"> {
+  success: false;
+  error: ErrorResponse;
+}
 
+type ErrorResponse = {
+  status: ErrorStatusCodes;
+  message: string;
+  type?: ErrorTypes;
+  detail?: string;
+};
+
+// if more detail needs to be added
 interface StandardResponseMetaData {}
-
 interface StandardResponseLinks {}
+type ErrorTypes = string;
 
-export type StatusCodes = NeutralStatusCodes | ErrorStatusCodes;
+// status codes
+export type StatusCodes = NonErrorStatusCodes | ErrorStatusCodes;
 
-type NeutralStatusCodes =
+type NonErrorStatusCodes =
   | 200
   | 201
   | 202
@@ -32,7 +40,7 @@ type NeutralStatusCodes =
   | 307
   | 308;
 
-type ErrorStatusCodes =
+export type ErrorStatusCodes =
   | 400
   | 401
   | 402

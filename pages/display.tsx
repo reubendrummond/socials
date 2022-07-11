@@ -2,7 +2,7 @@ import { User } from "@prisma/client";
 import prisma from "@prisma";
 import React from "react";
 import MainLayout from "layouts/MainLayout";
-import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
+import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import { CustomNextPage } from "@lib/types/page";
 
 interface UserProps {

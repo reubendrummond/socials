@@ -1,6 +1,6 @@
 import { useAuth } from "@lib/hooks/useAuth";
 import { CustomNextPage } from "@lib/types/page";
-import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
+import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
 import Image from "next/image";
 import { userInfo } from "os";
@@ -27,7 +27,6 @@ Account.title = "Account";
 Account.authRequired = "USER";
 
 export const getServerSideProps = RequireServerSideAuth<{}>(async (context) => {
-  context.user;
   return { props: {} };
 }, "USER");
 

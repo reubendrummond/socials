@@ -40,7 +40,7 @@ export const UserRegistrationSchema = yup.object().shape({
         const controller = new AbortController();
         const timeout = setTimeout(() => controller.abort(), 3000);
         try {
-          const res: Response = await fetch(`/api/user/${username}`, {
+          const res: Response = await fetch(`/api/users/${username}`, {
             signal: controller.signal,
           });
 

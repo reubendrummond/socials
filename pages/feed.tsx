@@ -1,6 +1,6 @@
 import UserPost from "@components/Feed/Post";
 import { CustomNextPage } from "@lib/types/page";
-import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
+import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
 
 const Feed: CustomNextPage = () => {

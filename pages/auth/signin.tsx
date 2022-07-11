@@ -1,7 +1,7 @@
 import { CustomNextPage } from "@lib/types/page";
 import AuthLayout from "layouts/AuthLayout";
 import React, { useEffect, useState } from "react";
-import { RequireServerSideAuth } from "@lib/wrappers/SSAuth";
+import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import { SignInForm } from "@components/Forms/SignInForm";
 import FormCard from "@components/Forms/AuthFormCard";
 import { signIn, useSession } from "next-auth/react";
