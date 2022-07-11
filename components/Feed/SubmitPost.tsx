@@ -10,8 +10,8 @@ const UserPost: FC = () => {
   return (
     <div className="flex flex-col gap-y-2 items-center w-full">
       <div className="flex items-center gap-x-3 w-full">
-        <div className="w-12 rounded-full overflow-clip">
-          {session?.user && (
+        <div className="w-12 h-12 bg-gray-200 dark:bg-gray-700 rounded-full overflow-clip">
+          {session?.user ? (
             <Image
               src={session.user.image || BACKUP_PROFILE_IMAGE}
               width="32px"
@@ -19,9 +19,11 @@ const UserPost: FC = () => {
               layout="responsive"
               alt={BACKUP_PROFILE_IMAGE}
             />
+          ) : (
+            <div className="bg-gray-200 dark:bg-gray-700 rounded-full" />
           )}
         </div>
-        <p>{session?.user?.username}</p>
+        <p>{session?.user?.username || session?.user?.name}</p>
       </div>
       <PostForm />
     </div>

@@ -21,12 +21,38 @@ const PostItem: FC<PostItemProps> = ({ post }) => {
   );
 };
 
+export const PlaceholderPostItem = () => {
+  return (
+    <div className="w-full bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 overflow-clip flex-start">
+      <div className="animate-pulse flex flex-col gap-y-2 ">
+        <div className="w-full flex flex-row gap-x-2 items-center">
+          <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-gray-700 shrink-0" />
+          <div className="w-full flex justify-between">
+            <div className="text-transparent rounded-md bg-gray-200 dark:bg-gray-700">
+              some username
+            </div>
+            <div className="text-transparent rounded-md bg-gray-200 dark:bg-gray-700 w-[]">
+              some time
+            </div>
+          </div>
+        </div>
+        <div className="text-transparent rounded-md bg-gray-200 dark:bg-gray-700 w-full">
+          body
+        </div>
+        <div className="text-transparent rounded-md bg-gray-200 dark:bg-gray-700 w-[80%]">
+          body
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const UserHeading: FC<UserHeadingProps> = ({ post }) => {
   const user = post.user;
 
   return (
     <div className="w-full flex flex-row gap-x-2 items-center">
-      <div className="w-10 ">
+      <div className="w-10 h-10 shrink-0">
         <Image
           src={user?.image || BACKUP_PROFILE_IMAGE}
           alt={user?.username || "username"}

@@ -1,5 +1,5 @@
 import SubmitPost from "@components/Feed/SubmitPost";
-import PostItem from "@components/Feed/PostItem";
+import PostItem, { PlaceholderPostItem } from "@components/Feed/PostItem";
 import { CustomNextPage } from "@lib/types/page";
 import { RequireServerSideAuth } from "@lib/wrappers/getServerSidePropsWrappers";
 import MainLayout from "layouts/MainLayout";
@@ -13,14 +13,22 @@ const Feed: CustomNextPage = () => {
   const { data: posts, error } = useSWR("/api/posts", fetcher);
 
   return (
-    <MainLayout className="flex flex-col items-center w-full max-w-md mx-auto text-left">
+    <MainLayout className="flex flex-col items-center w-full max-w-md mx-auto text-left gap-y-1">
       <h3 className="w-full">What&apos;s on your mind?</h3>
 
       <SubmitPost />
       <div className="flex flex-col w-full my-4 gap-y-2">
-        {posts?.map((post: any) => (
-          <PostItem key={post.createdAt + post.user.username} post={post} />
-        ))}
+        {posts ? (
+          posts.map((post: any) => (
+            <PostItem key={post.createdAt + post.user.username} post={post} />
+          ))
+        ) : (
+          <>
+            <PlaceholderPostItem />
+            <PlaceholderPostItem />
+            <PlaceholderPostItem />
+          </>
+        )}
       </div>
     </MainLayout>
   );

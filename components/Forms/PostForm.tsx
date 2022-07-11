@@ -59,7 +59,7 @@ export const PostForm = () => {
           <div className="w-full rounded-lg relative shadow-md">
             <textarea
               {...register("body")}
-              rows={5}
+              rows={3}
               className="w-full rounded-lg p-2 resize-none"
             />
             {shouldDisplayError && (
