@@ -31,7 +31,7 @@ const RightNav = () => {
     <>
       {
         <Transition
-          show={user !== undefined}
+          show={Boolean(session)}
           className="flex flex-row items-center gap-x-4 z-10"
           enter="transition-opacity duration-800"
           enterFrom="opacity-0"
@@ -64,7 +64,7 @@ const RightNav = () => {
           ) : (
             <>
               <Link href="/auth/signin">Sign In</Link>
-              <Link href="/auth/register">Register</Link>
+              {/* <Link href="/auth/register">Register</Link> */}
             </>
           )}
           <ThemeToggle />

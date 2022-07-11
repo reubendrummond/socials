@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { FC, useEffect } from "react";
-import { date } from "yup/lib/locale";
+import { FC } from "react";
 import { BACKUP_PROFILE_IMAGE } from "@lib/constants";
 
 interface PostItemProps {
