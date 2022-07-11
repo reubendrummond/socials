@@ -1,4 +1,8 @@
-import { AfterLoginPage, AuthRequiredOptions, LoginPage } from "@lib/constants";
+import {
+  AFTER_SIGNIN_PAGE,
+  AuthRequiredOptions,
+  SIGNIN_PAGE,
+} from "@lib/constants";
 import usePush from "@lib/hooks/usePush";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
@@ -30,7 +34,7 @@ export const RouteGuard = ({
       // later: go to 'from' if exists else:
       const next = router.query.next as string;
       if (next) push("/" + next);
-      else push(AfterLoginPage);
+      else push(AFTER_SIGNIN_PAGE);
       return;
     }
 
@@ -41,7 +45,7 @@ export const RouteGuard = ({
       authRequired !== "UNAUTHED"
     ) {
       console.log("here");
-      push(LoginPage);
+      push(SIGNIN_PAGE);
       return;
     }
   }, [session, status, authRequired, push, router]);

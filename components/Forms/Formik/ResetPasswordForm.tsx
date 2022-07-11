@@ -3,7 +3,7 @@ import { ResetPasswordSchema } from "@lib/forms/validationSchemas";
 import { useState } from "react";
 import { useAuth } from "@lib/hooks/useAuth";
 import { StyledInput, SubmitButton } from "./StyledInputs";
-import { resetInput } from "./utils";
+import { resetInput } from "../utils";
 
 export const ResetPasswordForm = () => {
   const [message, setMessage] = useState("");

@@ -18,14 +18,11 @@ export const PostForm = () => {
 
   // get form data and mutate the existing posts list
   const submitAndReturnPosts = async (formData: any) => {
-    await new Promise((res) => setTimeout(res, 1000));
-
     const res = await fetch("/api/posts", {
       method: "POST",
       body: JSON.stringify(formData),
     }).then((res) => res.json());
 
-    await new Promise((res) => setTimeout(res, 3000));
     return [res.data.post, ...data];
   };
 
@@ -39,6 +36,8 @@ export const PostForm = () => {
           ],
           rollbackOnError: true,
         });
+
+        // some success toast
 
         reset();
       } catch (err) {

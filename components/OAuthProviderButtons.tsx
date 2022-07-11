@@ -37,7 +37,7 @@ export const GitHubSignInButton: FC<OAuthButtonProps> = ({
       <button
         onClick={signIn}
         disabled={disabled}
-        className="w-full flex justify-center px-4 h-[40px] bg-neutral-700 items-center rounded-md shadow-md self-center hover:bg-neutral-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="w-full flex justify-center px-4 h-[40px] bg-neutral-700 items-center rounded-md shadow-md self-center disabled:opacity-50 hover:opacity-80  disabled:cursor-not-allowed"
       >
         <div className="relative aspect-square h-[24px] fill-white">
           <svg aria-label="github" viewBox="0 0 14 14">
