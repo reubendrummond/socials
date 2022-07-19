@@ -7,10 +7,19 @@ import { PostFormSchema } from "@lib/forms/validationSchemas";
 
 const handler = ApiRouteHandler({
   handleGET: async (req, res) => {
-    const id = Number(req.query.id);
+    const id = Number(typeof req.query.id ? req.query.id : req.query.id[0]);
+    if (isNaN(id)) throw new ApiError("Post id must be a number", 400);
     const post = await prisma.post.findFirst({
       where: {
         id,
+      },
+      include: {
+        _count: {
+          select: {
+            comments: true,
+            reactions: true,
+          },
+        },
       },
     });
 

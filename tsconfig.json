@@ -28,5 +28,6 @@
     "**/*.tsx",
     "pages/api/users/[username]"
   ],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "strict": true
 }

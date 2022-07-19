@@ -1,17 +1,24 @@
-export type StandardResponse = StandardSuccessResponse | StandardErrorResponse;
+export type StandardResponse<R = {}> =
+  | StandardSuccessResponse<R>
+  | StandardErrorResponse;
 
-interface StandardSuccessResponse {
+export interface StandardSuccessResponse<T extends {}> {
   success: true;
-  data: {};
+  data: T;
   meta?: StandardResponseMetaData;
-  links?: StandardResponseLinks | StandardResponseLinks[];
+  // links?: StandardResponseLinks | StandardResponseLinks[];
 }
 
-interface StandardErrorResponse
-  extends Omit<StandardSuccessResponse, "success" | "data"> {
+export interface StandardErrorResponse {
   success: false;
   error: ErrorResponse;
+  meta?: StandardResponseMetaData;
 }
+// interface StandardErrorResponse<T>
+//   extends Omit<StandardSuccessResponse<T>, "success" | "data"> {
+//   success: false;
+//   error: ErrorResponse;
+// }
 
 type ErrorResponse = {
   status: ErrorStatusCodes;

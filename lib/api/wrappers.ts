@@ -1,4 +1,8 @@
-import { ErrorStatusCodes, StandardResponse } from "@lib/types/backend";
+import {
+  ErrorStatusCodes,
+  StandardErrorResponse,
+  StandardResponse,
+} from "@lib/types/backend";
 import { Prisma } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 import { Session, unstable_getServerSession } from "next-auth";
@@ -7,43 +11,46 @@ import { ApiError } from "./errors";
 
 type ApiRequestWithAuth = NextApiRequest & { session: Required<Session> };
 
-type AuthApiHandler<A extends boolean> = (
+type AuthApiHandler<A extends boolean, T extends {}> = (
   req: A extends true ? ApiRequestWithAuth : NextApiRequest,
-  res: NextApiResponse<StandardResponse>
+  res: NextApiResponse<StandardResponse<T>>
 ) => unknown | Promise<unknown>;
 
-type ApiHandler =
+type ApiHandler<T> =
   | {
       authRequired: true;
-      handler: HandlerWithAuth;
+      handler: HandlerWithAuth<T>;
     }
   | {
       authRequired: false;
-      handler: HandlerNoAuth;
+      handler: HandlerNoAuth<T>;
     }
-  | HandlerNoAuth;
+  | HandlerNoAuth<T>;
 
-export type HandlerNoAuth = AuthApiHandler<false>;
-export type HandlerWithAuth = AuthApiHandler<true>;
+export type HandlerNoAuth<T = {}> = AuthApiHandler<false, T>;
+export type HandlerWithAuth<T = {}> = AuthApiHandler<true, T>;
 
-interface RequestHandlers {
-  handleGET?: ApiHandler;
-  handlePOST?: ApiHandler;
-  handlePUT?: ApiHandler;
-  handlePATCH?: ApiHandler;
-  handleDELETE?: ApiHandler;
+interface RequestHandlers<Get, Post, Delete, Put, Patch> {
+  handleGET?: ApiHandler<Get>;
+  handlePOST?: ApiHandler<Post>;
+  handleDELETE?: ApiHandler<Delete>;
+  handlePUT?: ApiHandler<Put>;
+  handlePATCH?: ApiHandler<Patch>;
 }
 
-const ApiRouteHandler = ({
+const ApiRouteHandler = <Get, Post, Delete, Put, Patch>({
   handleGET,
   handlePOST,
+  handleDELETE,
   handlePUT,
   handlePATCH,
-  handleDELETE,
-}: RequestHandlers): AuthApiHandler<true> => {
+}: RequestHandlers<Get, Post, Delete, Put, Patch>): AuthApiHandler<
+  true,
+  {}
+> => {
   return async (req, res) => {
     try {
-      let handler: ApiHandler | undefined;
+      let handler: ApiHandler<{}> | undefined;
 
       switch (req.method) {
         case "GET":
@@ -90,7 +97,10 @@ const ApiRouteHandler = ({
 
 const DEFAULT_ERROR_STATUS_CODE = 400;
 const DEFAULT_ERROR_MESSAGE = "There was an error. Please try again.";
-const errorHandler = (res: NextApiResponse<StandardResponse>, err: any) => {
+const errorHandler = (
+  res: NextApiResponse<StandardErrorResponse>,
+  err: any
+) => {
   // default error
   let message: string = DEFAULT_ERROR_MESSAGE;
   let status: ErrorStatusCodes = DEFAULT_ERROR_STATUS_CODE;
@@ -108,7 +118,6 @@ const errorHandler = (res: NextApiResponse<StandardResponse>, err: any) => {
   }
 
   // handle API errors
-
   return res.status(status).json({
     success: false,
     error: {
